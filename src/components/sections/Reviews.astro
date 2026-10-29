@@ -1,14 +1,15 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
 import Stars from '../ui/Stars.astro';
 import Button from '../ui/Button.astro';
-import google from '../../assets/images/google.png';
-import googleSmall from '../../assets/images/google-small.png';
-import jose from '../../assets/images/review-jose.png';
-import tiffany from '../../assets/images/review-tiffany.png';
+import google from '../../assets/images/google.webp';
+import googleSmall from '../../assets/images/google-small.webp';
+import jose from '../../assets/images/review-jose.webp';
+import tiffany from '../../assets/images/review-tiffany.webp';
 import { site } from '../../data/site';
 
-const reviews = [
+const rawReviews = [
   {
     name: 'Jose Alvarado',
     date: 'Feb 18, 2026',
@@ -22,6 +23,10 @@ const reviews = [
     text: 'Our town gained an amazing chiropractor when she (Jessica) came here. She is such a blessing! She took awesome care of my family and I after an auto accident and did the paperwork as well. She is very friendly and takes her time and listens to you and is very knowledgeable about how to help you. I always leave feeling better. I highly recommend her for sure and she has a great coffee bar lol',
   },
 ];
+// Optimised avatar URLs for the pop-up (the cards use <Image> directly).
+const reviews = await Promise.all(
+  rawReviews.map(async (r) => ({ ...r, avatarSrc: (await getImage({ src: r.avatar, width: 96, format: 'webp' })).src })),
+);
 ---
 
 <section class="section reviews" id="reviews" aria-labelledby="reviews-title">
@@ -57,7 +62,18 @@ const reviews = [
               <hr class="divider" />
               <div class="review__body">
                 <Stars size={16} gap={2.5} />
-                <p>{r.text}</p>
+                <p class="review__text" data-review-text>{r.text}</p>
+                <button
+                  type="button"
+                  class="review__more"
+                  data-review-open
+                  data-name={r.name}
+                  data-date={r.date}
+                  data-avatar={r.avatarSrc}
+                  hidden
+                >
+                  Read more
+                </button>
               </div>
             </li>
           ))
@@ -65,7 +81,59 @@ const reviews = [
       </ul>
     </div>
   </div>
+
+  <dialog class="review-modal" data-review-modal aria-labelledby="review-modal-name">
+    <div class="review-modal__card">
+      <button type="button" class="review-modal__close" data-review-close aria-label="Close review">
+        <Icon name="close" size={20} />
+      </button>
+      <div class="review__head">
+        <img class="review-modal__avatar" data-review-avatar alt="" width="44" height="44" />
+        <div class="review__who">
+          <p class="label" id="review-modal-name" data-review-name></p>
+          <p class="review__date" data-review-date></p>
+        </div>
+        <Image src={googleSmall} alt="Google review" width={24} height={24} class="review__g" />
+      </div>
+      <hr class="divider" />
+      <div class="review__body">
+        <Stars size={16} gap={2.5} />
+        <p class="review-modal__text" data-review-full></p>
+      </div>
+    </div>
+  </dialog>
 </section>
+
+<script>
+  const modal = document.querySelector<HTMLDialogElement>('[data-review-modal]');
+
+  // Show "Read more" only on reviews that are actually cut off.
+  const checkClamp = () => {
+    document.querySelectorAll<HTMLElement>('[data-review-text]').forEach((p) => {
+      const btn = p.parentElement?.querySelector<HTMLButtonElement>('[data-review-open]');
+      if (btn) btn.hidden = p.scrollHeight <= p.clientHeight + 2;
+    });
+  };
+  checkClamp();
+  window.addEventListener('resize', checkClamp);
+  document.fonts?.ready.then(checkClamp);
+
+  document.querySelectorAll<HTMLButtonElement>('[data-review-open]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!modal) return;
+      const text = btn.parentElement?.querySelector('[data-review-text]')?.textContent ?? '';
+      modal.querySelector('[data-review-name]')!.textContent = btn.dataset.name ?? '';
+      modal.querySelector('[data-review-date]')!.textContent = btn.dataset.date ?? '';
+      modal.querySelector('[data-review-full]')!.textContent = text;
+      const img = modal.querySelector<HTMLImageElement>('[data-review-avatar]');
+      if (img && btn.dataset.avatar) img.src = btn.dataset.avatar;
+      modal.showModal();
+      modal.querySelector<HTMLButtonElement>('[data-review-close]')?.focus();
+    });
+  });
+  modal?.querySelector('[data-review-close]')?.addEventListener('click', () => modal.close());
+  modal?.addEventListener('click', (e) => e.target === modal && modal.close());
+</script>
 
 <style>
   .reviews__inner { display: flex; flex-direction: column; gap: 40px; }
@@ -102,6 +170,64 @@ const reviews = [
   .review__head :global(.review__g) { width: 24px; height: 24px; flex: none; }
   .review__body { display: flex; flex-direction: column; gap: 8px; }
   .review__body p { font-size: 14px; line-height: 1.36; color: var(--text-strong); }
+  .review__text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+  }
+  .review__more {
+    align-self: flex-start;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .review__more:hover { color: var(--text-heading); }
+
+  .review-modal {
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100dvh - 48px);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    overflow: visible;
+  }
+  .review-modal::backdrop { background: rgba(0, 0, 0, 0.55); }
+  .review-modal[open] { animation: review-in 0.18s ease-out; }
+  @keyframes review-in { from { opacity: 0; transform: translateY(8px); } }
+  .review-modal__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+    background: var(--surface-page);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+  }
+  .review-modal__card .review__head { padding-right: 36px; }
+  .review-modal__avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; }
+  .review-modal__text { font-size: 16px !important; line-height: 1.6 !important; }
+  .review-modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-strong);
+    background: var(--surface-sand);
+  }
+  .review-modal__close:hover { background: var(--surface-sand-dark); }
 
   @media (min-width: 1024px) {
     .reviews__list { grid-template-columns: 1fr 1fr; }

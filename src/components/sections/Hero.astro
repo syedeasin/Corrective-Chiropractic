@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
+import VideoPlayer from '../ui/VideoPlayer.astro';
 import Button from '../ui/Button.astro';
 import Rating from '../ui/Rating.astro';
-import heroImg from '../../assets/images/hero.png';
+import { media } from '../../data/media';
 import { site } from '../../data/site';
 ---
 
@@ -26,13 +26,11 @@ import { site } from '../../data/site';
   </div>
 
   <div class="hero__media">
-    <Image
-      src={heroImg}
-      alt="Dr. Jessica Hardner adjusting a patient at Corrective Chiropractic in Newberry"
-      widths={[480, 768, 916]}
-      sizes="(min-width: 1024px) 50vw, 100vw"
-      loading="eager"
-      fetchpriority="high"
+    <VideoPlayer
+      src={media.heroVideo}
+      poster={media.heroPoster}
+      label="Message from your Corrective Chiropractic doctor"
+      class="hero__video"
     />
   </div>
 </section>
@@ -64,16 +62,15 @@ import { site } from '../../data/site';
     height: 600px;
     margin-top: 40px;
   }
-  .hero__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 60% 30%;
-  }
+  .hero__media :global(.hero__video) { width: 100%; height: 100%; }
+  .hero__media :global(.vp__video) { object-position: 50% 30%; }
+  /* Keep the controls clear of the fade at the bottom edge. */
+  .hero__media :global(.vp__bar) { bottom: 14%; right: 16px; }
   .hero__media::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
     background:
       linear-gradient(180deg, #fafcfb 0%, rgba(250, 252, 251, 0) 16%),
       linear-gradient(0deg, #fafcfb 0%, rgba(250, 252, 251, 0) 16%);

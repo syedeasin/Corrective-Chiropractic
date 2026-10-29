@@ -1,16 +1,23 @@
 ---
 import { Image } from 'astro:assets';
-import exterior from '../../assets/images/strip-exterior.png';
-import treatment from '../../assets/images/strip-treatment-room.png';
-import waiting from '../../assets/images/strip-waiting-room.png';
+import exterior from '../../assets/images/strip-exterior.webp';
+import treatment from '../../assets/images/strip-treatment-room.webp';
+import waiting from '../../assets/images/strip-waiting-room.webp';
+import office from '../../assets/images/strip-office.webp';
+import hallway from '../../assets/images/strip-hallway.webp';
+import adjustment from '../../assets/images/strip-adjustment.webp';
 
+// Original clinic photos from the Figma strip (exported in high resolution).
 const photos = [
   { src: exterior, alt: 'Outside the Corrective Chiropractic clinic on Calhoun Street' },
-  { src: treatment, alt: 'Treatment room' },
   { src: waiting, alt: 'Waiting room with coffee bar' },
+  { src: adjustment, alt: 'Dr. Jessica Hardner adjusting a patient' },
+  { src: treatment, alt: 'Treatment room' },
+  { src: office, alt: 'Consultation office' },
+  { src: hallway, alt: 'Clinic hallway' },
 ];
 // Repeat so the strip is wider than any screen, then double it for a seamless loop.
-const set = [...photos, ...photos, ...photos];
+const set = [...photos, ...photos];
 ---
 
 <section class="strip" aria-label="Inside the clinic">
@@ -20,7 +27,7 @@ const set = [...photos, ...photos, ...photos];
         <ul class="strip__set" aria-hidden={copy === 1 ? 'true' : undefined}>
           {set.map((p) => (
             <li>
-              <Image src={p.src} alt={copy === 1 ? '' : p.alt} widths={[216, 432]} sizes="216px" loading="lazy" />
+              <Image src={p.src} alt={copy === 1 ? '' : p.alt} widths={[216, 432, 648]} sizes="216px" loading="lazy" />
             </li>
           ))}
         </ul>

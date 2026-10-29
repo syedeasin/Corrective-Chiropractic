@@ -1,23 +1,25 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Button from '../components/ui/Button.astro';
 import Icon from '../components/ui/Icon.astro';
-import VideoModal from '../components/ui/VideoModal.astro';
-import walkthrough from '../assets/images/walkthrough.png';
+import VideoPlayer from '../components/ui/VideoPlayer.astro';
+import { media } from '../data/media';
 import { site } from '../data/site';
 
-// TODO(content): set to an .mp4 in /public/videos or a YouTube embed URL.
-const walkthroughVideo = '';
-
-const bring = ['Photo ID', 'Your auto insurance card or claim number', 'Any accident or ER paperwork you have', 'Comfortable clothing'];
+// Copy follows the mobile thank-you frame in Figma (the source of truth for content).
+const bring = [
+  { text: "Driver's license" },
+  {
+    text: 'Insurance card',
+    note: '(Even though we are a cash-only practice, we collect insurance information to perform a complimentary benefits check for you.)',
+  },
+];
 const expect = [
-  'A one-on-one conversation about the accident and how you feel',
-  'A full chiropractic examination',
-  'Digital X-rays if your findings call for them',
-  'A clear explanation of what we found and what comes next',
+  'Arrive 10–15 minutes early to fill out forms',
+  'The doctor will give you a tour of our office',
+  'A comprehensive consultation, exam, and digital x-rays',
 ];
 ---
 
@@ -31,59 +33,75 @@ const expect = [
     <section class="section">
       <div class="container ty__inner">
         <div class="section-head">
-          <p class="eyebrow">You’re booked!</p>
-          <h1 class="h1">Here’s What to Expect.</h1>
-          <p class="lead">We'll check your coverage and call you shortly to confirm your appointment time.</p>
+          <h1 class="h1">You’re booked! <br />Here’s what to expect.</h1>
+          <p class="lead">Your appointment is confirmed. Our team will reach out to you shortly to confirm your details.</p>
+          <p class="ty__watch">Watch our 60-second walkthrough <br />from the Newberry Doctor</p>
         </div>
 
-        <div class="ty__video">
-          <Image src={walkthrough} alt="Walkthrough of the clinic" widths={[800, 1000]} sizes="(min-width: 880px) 800px, 100vw" />
-          <button type="button" class="ty__play" aria-label="Play clinic walkthrough video" data-video={walkthroughVideo} disabled={!walkthroughVideo}>
-            <Icon name="play" size={22} strokeWidth={1.8} />
-          </button>
-        </div>
+        <VideoPlayer
+          src={media.walkthroughVideo}
+          poster={media.walkthroughPoster}
+          label="60-second walkthrough from the Newberry doctor"
+          class="ty__video"
+        />
 
         <div class="ty__cards">
           <div class="card ty-card">
-            <h2 class="title-18">What to bring</h2>
-            <ul>{bring.map((b) => <li><Icon name="check-circle" size={15} />{b}</li>)}</ul>
+            <h2 class="title-18">What to bring:</h2>
+            <ul>
+              {
+                bring.map((b) => (
+                  <li>
+                    <Icon name="check-circle" size={15} />
+                    <span>
+                      {b.text}
+                      {b.note && <small class="ty-card__note">{b.note}</small>}
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
           </div>
           <div class="card ty-card">
-            <h2 class="title-18">What to expect on your first visit</h2>
+            <h2 class="title-18">What to expect on your first visit:</h2>
             <ul>{expect.map((b) => <li><Icon name="check-circle" size={15} />{b}</li>)}</ul>
           </div>
           <div class="card ty-card">
             <h2 class="title-18">Need to reschedule?</h2>
-            <p>Call us at <a href={site.phoneHref}>{site.phoneDisplay}</a> and we'll find a new time that works.</p>
-            <p>{site.address}</p>
-            <Button href={site.directionsUrl} variant="peach" size="sm" target="_blank" rel="noopener">Get directions</Button>
+            <ul class="ty-card__contact">
+              <li><Icon name="phone" size={15} /><a href={site.phoneHref}>{site.phoneDisplay}</a></li>
+              <li><Icon name="mail" size={15} /><a href={`mailto:${site.email}`}>{site.email}</a></li>
+              <li><Icon name="marker-pin" size={15} /><span>{site.address}</span></li>
+            </ul>
+            <Button href={site.directionsUrl} variant="peach" size="sm" block target="_blank" rel="noopener">Get directions</Button>
           </div>
         </div>
       </div>
     </section>
-    <VideoModal />
   </main>
   <SiteFooter />
 </BaseLayout>
 
 <style>
   .ty__inner { display: flex; flex-direction: column; align-items: center; gap: 40px; }
-  .ty__video { position: relative; width: 100%; max-width: 800px; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-float); }
-  .ty__video img { width: 100%; height: 100%; object-fit: cover; }
-  .ty__play {
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    display: flex; align-items: center; justify-content: center;
-    width: 64px; height: 52px; border-radius: 20px;
-    background: var(--surface-sand); color: var(--text-heading);
-    box-shadow: 0 8.5px 8.5px rgba(0, 0, 0, 0.12), inset 0 8.5px 10.5px #fff;
+  .ty__watch { margin-top: 8px; font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-strong); }
+  .ty__inner :global(.ty__video) {
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
   }
-  .ty__play:disabled { cursor: default; }
   .ty__cards { display: grid; gap: 16px; width: 100%; }
   .ty-card { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
   .ty-card ul { display: flex; flex-direction: column; gap: 10px; }
   .ty-card li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--text-strong); }
   .ty-card li :global(.icon) { flex: none; margin-top: 2px; }
   .ty-card p { font-size: 14px; line-height: 1.5; color: var(--text-body); }
-  .ty-card a { color: var(--green-700); font-weight: 500; }
+  .ty-card a { color: var(--text-strong); }
+  .ty-card a:hover { text-decoration: underline; }
+  .ty-card__note { display: block; margin-top: 4px; font-size: 12px; line-height: 1.4; color: var(--text-subtle); }
+  .ty-card__contact li { align-items: center; word-break: break-word; }
+  .ty-card :global(.btn) { margin-top: 4px; }
   @media (min-width: 1024px) { .ty__cards { grid-template-columns: repeat(3, 1fr); } }
 </style>

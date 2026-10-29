@@ -1,20 +1,18 @@
 ---
-import { Image } from 'astro:assets';
-import Icon from '../ui/Icon.astro';
 import Rating from '../ui/Rating.astro';
-import VideoModal from '../ui/VideoModal.astro';
-import session1 from '../../assets/images/session-1.png';
-import session2 from '../../assets/images/session-2.png';
+import VideoPlayer from '../ui/VideoPlayer.astro';
+import { media } from '../../data/media';
 
-// TODO(content): names and dates are placeholders from the design. Add each clip's URL to `video`
-// (an .mp4 in /public/videos, or a YouTube embed URL) and the play button opens it.
-const sessions = [
-  { poster: session1, name: 'Jessica M.', date: 'Mar 22, 2026', video: '' },
-  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
-  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
-  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
-  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
+// TODO(content): names and dates are design placeholders. Clips come from src/data/media.ts.
+const labels = [
+  { name: 'Jessica M.', date: 'Mar 22, 2026' },
+  { name: 'Mark T.', date: 'Feb 18, 2026' },
+  { name: 'Sarah L.', date: 'Feb 2, 2026' },
+  { name: 'David R.', date: 'Jan 20, 2026' },
+  { name: 'Emily K.', date: 'Jan 8, 2026' },
+  { name: 'Chris P.', date: 'Dec 14, 2025' },
 ];
+const sessions = media.sessions.map((video, i) => ({ video, ...labels[i % labels.length] }));
 ---
 
 <section class="section section--alt sessions" aria-labelledby="sessions-title">
@@ -24,70 +22,136 @@ const sessions = [
       <h2 id="sessions-title" class="h2">See What Care <br class="br-desktop" />Actually Looks Like</h2>
     </div>
     <Rating size={12} class="sessions__rating" />
+  </div>
 
-    <div class="sessions__track" data-carousel tabindex="0" aria-label="Session videos">
+  <div class="sessions__viewport">
+    <div class="sessions__track" data-drag-slider tabindex="0" role="region" aria-label="Session videos, drag or scroll sideways">
       {
         sessions.map((s) => (
           <article class="session">
-            <Image src={s.poster} alt={`Treatment session with ${s.name}`} widths={[256, 512]} sizes="256px" loading="lazy" />
-            <div class="session__overlay">
-              <button
-                type="button"
-                class="session__play"
-                aria-label={`Play session video: ${s.name}`}
-                data-video={s.video}
-                disabled={!s.video}
-              >
-                <Icon name="play" size={20} strokeWidth={1.8} />
-              </button>
-              <p class="session__meta">
-                <b>{s.name}</b>
-                <span class="session__dot" aria-hidden="true" />
-                <span>{s.date}</span>
-              </p>
-            </div>
+            <VideoPlayer src={s.video} label={`Treatment session with ${s.name}`} controls="compact" size="md" class="session__player" />
+            <div class="session__overlay" aria-hidden="true" />
+            <p class="session__meta">
+              <b>{s.name}</b>
+              <span class="session__dot" aria-hidden="true" />
+              <span>{s.date}</span>
+            </p>
           </article>
         ))
       }
     </div>
-
-    <div class="sessions__progress" aria-hidden="true"><span data-carousel-thumb></span></div>
   </div>
-  <VideoModal />
+
+  <div class="container">
+    <div class="sessions__progress" aria-hidden="true"><span data-slider-thumb></span></div>
+  </div>
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((track) => {
-    const thumb = track.parentElement?.querySelector<HTMLElement>('[data-carousel-thumb]');
-    if (!thumb) return;
+  document.querySelectorAll<HTMLElement>('[data-drag-slider]').forEach((track) => {
+    const thumb = track.closest('section')?.querySelector<HTMLElement>('[data-slider-thumb]');
+
     const update = () => {
-      const visible = track.clientWidth / track.scrollWidth;
+      if (!thumb) return;
+      const visible = Math.min(track.clientWidth / track.scrollWidth, 1);
       const max = track.scrollWidth - track.clientWidth;
       const progress = max > 0 ? track.scrollLeft / max : 0;
-      thumb.style.width = `${Math.min(visible, 1) * 100}%`;
-      thumb.style.transform = `translateX(${progress * (1 / Math.min(visible, 1) - 1) * 100}%)`;
+      thumb.style.width = `${visible * 100}%`;
+      thumb.style.transform = `translateX(${progress * (1 / visible - 1) * 100}%)`;
     };
     track.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
+
+    // Mouse drag (touch and trackpads already scroll natively).
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startLeft = 0;
+
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) {
+        moved = true;
+        track.classList.add('is-dragging');
+      }
+      if (moved) {
+        e.preventDefault();
+        track.scrollLeft = startLeft - dx;
+      }
+    });
+    const end = () => {
+      if (!down) return;
+      down = false;
+      if (moved) {
+        track.classList.remove('is-dragging');
+        // Let snap settle on the nearest card.
+        const card = track.querySelector<HTMLElement>('.session');
+        if (card) {
+          const step = card.offsetWidth + parseFloat(getComputedStyle(track).columnGap || '16');
+          track.scrollTo({ left: Math.round(track.scrollLeft / step) * step, behavior: 'smooth' });
+        }
+      }
+    };
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    // A drag should never also count as a click on a video or button.
+    track.addEventListener(
+      'click',
+      (e) => {
+        if (moved) {
+          e.preventDefault();
+          e.stopPropagation();
+          moved = false;
+        }
+      },
+      true,
+    );
+    track.addEventListener('dragstart', (e) => e.preventDefault());
+
+    // Keyboard: arrow keys move one card.
+    track.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const card = track.querySelector<HTMLElement>('.session');
+      if (!card) return;
+      e.preventDefault();
+      track.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * (card.offsetWidth + 16), behavior: 'smooth' });
+    });
   });
 </script>
 
 <style>
   .sessions__inner { display: flex; flex-direction: column; align-items: center; gap: 32px; }
-  .sessions :global(.sessions__rating) { margin-top: -0px; }
 
+  /* The track bleeds to the screen edges so cards slide in and out instead of being cut at the container. */
+  .sessions__viewport { margin-top: 32px; }
   .sessions__track {
+    --edge: max(var(--gutter), calc((100% - var(--container-max)) / 2));
     display: flex;
     gap: 16px;
-    width: 100%;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    padding: 8px var(--edge) 40px;
     scrollbar-width: none;
-    padding-bottom: 24px;
-    margin-bottom: -24px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .sessions__track::-webkit-scrollbar { display: none; }
+  .sessions__track:focus-visible { outline: 2px solid var(--green-700); outline-offset: -2px; }
+  .sessions__track.is-dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
+  .sessions__track.is-dragging .session { pointer-events: none; }
+
   .session {
     position: relative;
     flex: 0 0 255px;
@@ -96,45 +160,41 @@ const sessions = [
     overflow: hidden;
     scroll-snap-align: start;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background: #2a3224;
   }
-  .session img { width: 100%; height: 100%; object-fit: cover; }
+  .session :global(.session__player) { position: absolute; inset: 0; }
   .session__overlay {
     position: absolute;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 16px;
-    background: linear-gradient(180deg, rgba(69, 84, 58, 0) 35%, #45543a 90%);
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(69, 84, 58, 0) 55%, rgba(69, 84, 58, 0.92) 100%);
     box-shadow: inset 0 6px 24px 6px rgba(255, 255, 255, 0.3);
+    border-radius: inherit;
   }
-  .session__play {
+  .session__meta {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    left: 16px;
+    bottom: 22px;
+    z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 51px;
-    height: 42px;
-    border-radius: 17px;
-    background: var(--surface-sand);
-    color: var(--text-heading);
-    box-shadow: 0 8.5px 8.5px rgba(0, 0, 0, 0.12), inset 0 8.5px 10.5px #fff;
-    transition: transform 0.15s ease;
+    gap: 6px;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1;
+    pointer-events: none;
   }
-  .session__play:not(:disabled):hover { transform: translate(-50%, -50%) scale(1.06); }
-  .session__play:disabled { cursor: default; }
-  .session__meta { display: flex; align-items: center; gap: 6px; color: #fff; font-weight: 700; line-height: 1; }
   .session__meta b { font-size: 12px; }
   .session__meta span:last-child { font-size: 10px; color: rgba(255, 255, 255, 0.7); }
   .session__dot { width: 4px; height: 4px; border-radius: 50%; background: #9fd36b; }
+  .session :global(.vp__bar) { bottom: 12px; right: 12px; }
 
   .sessions__progress {
     position: relative;
     width: 100%;
     height: 2px;
+    margin-top: -8px;
     background: rgba(0, 0, 0, 0.08);
     border-radius: 2px;
     overflow: hidden;
@@ -148,5 +208,9 @@ const sessions = [
     background: var(--green-700);
     border-radius: 2px;
     transition: transform 0.1s linear;
+  }
+
+  @media (min-width: 1024px) {
+    .session { flex-basis: 280px; height: 500px; }
   }
 </style>

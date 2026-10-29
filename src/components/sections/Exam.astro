@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import Rating from '../ui/Rating.astro';
-import xray from '../../assets/images/exam-xray.png';
+import xray from '../../assets/images/exam-xray.webp';
 import { site } from '../../data/site';
 
 const included = [
@@ -29,7 +29,7 @@ const included = [
         <Image
           src={xray}
           alt="Neck X-ray with the healthy curve of the cervical spine highlighted"
-          widths={[648]}
+          widths={[480, 768, 1296]}
           sizes="(min-width: 1024px) 648px, 100vw"
           loading="lazy"
         />

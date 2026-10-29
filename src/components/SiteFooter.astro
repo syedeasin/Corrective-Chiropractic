@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import logo from '../assets/images/logo.png';
-import footerPhoto from '../assets/images/footer.png';
+import logo from '../assets/images/logo.webp';
+import footerPhoto from '../assets/images/footer.webp';
 import { site } from '../data/site';
 
 interface Props {
@@ -15,7 +15,7 @@ const { photo = false } = Astro.props;
   {
     photo && (
       <div class="site-footer__photo">
-        <Image src={footerPhoto} alt="" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" />
+        <Image src={footerPhoto} alt="" widths={[768, 1280, 1920, 2880]} sizes="100vw" loading="lazy" />
       </div>
     )
   }

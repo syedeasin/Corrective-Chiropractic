@@ -1,15 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
-import treatImg from '../../assets/images/treat.png';
-import neck from '../../assets/images/cond-neck.png';
-import headache from '../../assets/images/cond-headache.png';
-import lowback from '../../assets/images/cond-lowback.png';
-import disc from '../../assets/images/cond-disc.png';
-import sciatica from '../../assets/images/cond-sciatica.png';
-import shoulder from '../../assets/images/cond-shoulder.png';
-import decompression from '../../assets/images/cond-decompression.png';
-import numbness from '../../assets/images/cond-numbness.png';
+import treatImg from '../../assets/images/treat.webp';
+import neck from '../../assets/images/cond-neck.webp';
+import headache from '../../assets/images/cond-headache.webp';
+import lowback from '../../assets/images/cond-lowback.webp';
+import disc from '../../assets/images/cond-disc.webp';
+import sciatica from '../../assets/images/cond-sciatica.webp';
+import shoulder from '../../assets/images/cond-shoulder.webp';
+import decompression from '../../assets/images/cond-decompression.webp';
+import numbness from '../../assets/images/cond-numbness.webp';
 import { site } from '../../data/site';
 
 const conditions = [
@@ -52,7 +52,7 @@ const conditions = [
         <Image
           src={treatImg}
           alt="Dr. Jessica Hardner treating a patient after a car accident"
-          widths={[608]}
+          widths={[480, 768, 1216]}
           sizes="(min-width: 1024px) 50vw, 100vw"
           loading="lazy"
         />

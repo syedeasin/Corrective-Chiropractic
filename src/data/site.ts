@@ -8,8 +8,9 @@ export const site = {
   address: '1112 Calhoun St, Newberry, SC 29108',
   directionsUrl:
     'https://www.google.com/maps/dir/?api=1&destination=1112+Calhoun+St%2C+Newberry%2C+SC+29108',
+  // Live Google Maps embed of the clinic listing (no API key needed).
   mapEmbedUrl:
-    'https://www.google.com/maps?q=1112+Calhoun+St,+Newberry,+SC+29108&z=15&output=embed',
+    'https://maps.google.com/maps?q=Corrective+Chiropractic,+1112+Calhoun+St,+Newberry,+SC+29108&t=m&z=16&ie=UTF8&iwloc=&output=embed',
   rating: '4.9',
   reviewCount: '98+',
   // Where every "Check my coverage" button goes.

@@ -1,0 +1,236 @@
+---
+// Inline autoplay video with the three controls from the design review:
+//  - centre pebble button: play / pause (also toggled by tapping the video)
+//  - replay: restarts the clip from 0 (circular arrow icon, not a "back" arrow)
+//  - sound: mute / unmute (videos start muted so browsers allow autoplay)
+// Playback starts only when the player scrolls into view and pauses when it leaves,
+// so off-screen clips never download or burn CPU.
+import Icon from './Icon.astro';
+
+interface Props {
+  src: string;
+  poster?: string;
+  label: string;
+  class?: string;
+  /** Show the replay + sound buttons (sessions cards only need play/pause + sound). */
+  controls?: 'full' | 'compact';
+  /** Size of the centre pebble button. */
+  size?: 'md' | 'lg';
+}
+
+const { src, poster, label, class: className, controls = 'full', size = 'lg' } = Astro.props;
+---
+
+<div class:list={['vp', `vp--${size}`, className]} data-vp>
+  <video
+    class="vp__video"
+    data-src={src}
+    poster={poster}
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-label={label}
+  ></video>
+
+  <button type="button" class="vp__center" data-vp-toggle aria-label={`Play video: ${label}`}>
+    <span class="vp__icon vp__icon--play"><Icon name="play" size={size === 'lg' ? 22 : 18} strokeWidth={1.8} /></span>
+    <span class="vp__icon vp__icon--pause"><Icon name="pause" size={size === 'lg' ? 22 : 18} strokeWidth={2.4} /></span>
+  </button>
+
+  <div class="vp__bar">
+    {
+      controls === 'full' && (
+        <button type="button" class="vp__btn" data-vp-replay aria-label="Replay video from the start">
+          <Icon name="replay" size={18} strokeWidth={2} />
+        </button>
+      )
+    }
+    <button type="button" class="vp__btn" data-vp-mute aria-label="Turn sound on" aria-pressed="false">
+      <span class="vp__icon vp__icon--muted"><Icon name="volume-off" size={18} strokeWidth={2} /></span>
+      <span class="vp__icon vp__icon--sound"><Icon name="volume-on" size={18} strokeWidth={2} /></span>
+    </button>
+  </div>
+</div>
+
+<script>
+  const players = document.querySelectorAll<HTMLElement>('[data-vp]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const load = (video: HTMLVideoElement) => {
+    if (!video.src && video.dataset.src) {
+      video.src = video.dataset.src;
+      video.preload = 'metadata';
+    }
+  };
+
+  const setState = (el: HTMLElement, video: HTMLVideoElement) => {
+    const playing = !video.paused;
+    el.classList.toggle('is-playing', playing);
+    const toggle = el.querySelector<HTMLButtonElement>('[data-vp-toggle]');
+    const label = video.getAttribute('aria-label') ?? 'video';
+    toggle?.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} video: ${label}`);
+    el.classList.toggle('is-muted', video.muted);
+    const mute = el.querySelector<HTMLButtonElement>('[data-vp-mute]');
+    mute?.setAttribute('aria-label', video.muted ? 'Turn sound on' : 'Turn sound off');
+    mute?.setAttribute('aria-pressed', String(!video.muted));
+  };
+
+  const play = (video: HTMLVideoElement) => {
+    load(video);
+    video.play().catch(() => {
+      /* autoplay blocked: the play button stays visible */
+    });
+  };
+
+  players.forEach((el) => {
+    const video = el.querySelector<HTMLVideoElement>('video');
+    if (!video) return;
+    el.classList.add('is-muted');
+
+    // Remember when the visitor paused on purpose so scrolling back does not restart it.
+    let userPaused = false;
+
+    const toggle = () => {
+      if (video.paused) {
+        userPaused = false;
+        play(video);
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    };
+
+    el.querySelector('[data-vp-toggle]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+    video.addEventListener('click', toggle);
+
+    el.querySelector('[data-vp-replay]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userPaused = false;
+      load(video);
+      video.currentTime = 0;
+      play(video);
+    });
+
+    el.querySelector('[data-vp-mute]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const turnOn = video.muted;
+      if (turnOn) {
+        // Only one clip talks at a time.
+        players.forEach((other) => {
+          const v = other.querySelector('video');
+          if (v && v !== video) {
+            v.muted = true;
+            setState(other, v);
+          }
+        });
+      }
+      video.muted = !turnOn;
+      if (turnOn && video.paused) {
+        userPaused = false;
+        play(video);
+      }
+      setState(el, video);
+    });
+
+    ['play', 'pause', 'volumechange'].forEach((ev) => video.addEventListener(ev, () => setState(el, video)));
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            load(video);
+            if (!userPaused && !reduceMotion) play(video);
+          } else if (!video.paused) {
+            video.pause();
+          }
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(el);
+    } else {
+      load(video);
+    }
+  });
+</script>
+
+<style>
+  .vp {
+    position: relative;
+    overflow: hidden;
+    background: #1d2219;
+  }
+  .vp__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  /* Centre pebble: soft 3D look from the design (drop shadow + white inner shadow). */
+  .vp__center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 52px;
+    border-radius: 20px;
+    background: var(--surface-sand);
+    color: var(--text-heading);
+    box-shadow: 0 8.5px 8.5px rgba(0, 0, 0, 0.12), inset 0 8.5px 10.5px #fff, inset 0 -3px 6px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+  .vp--md .vp__center { width: 51px; height: 42px; border-radius: 17px; }
+  .vp__center:hover { transform: translate(-50%, -50%) scale(1.06); }
+  .vp__center:focus-visible { outline: 2px solid var(--green-700); outline-offset: 3px; }
+
+  /* While playing, the pebble fades out and comes back on hover / focus. */
+  .vp.is-playing .vp__center { opacity: 0; }
+  .vp.is-playing:hover .vp__center,
+  .vp.is-playing .vp__center:focus-visible { opacity: 1; }
+  @media (hover: none) {
+    .vp.is-playing .vp__center { opacity: 0; pointer-events: none; }
+  }
+
+  .vp__icon { display: flex; }
+  .vp__icon--pause,
+  .vp.is-playing .vp__icon--play { display: none; }
+  .vp.is-playing .vp__icon--pause { display: flex; }
+  .vp__icon--play :global(.icon) { margin-left: 2px; }
+
+  .vp__bar {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 3;
+    display: flex;
+    gap: 8px;
+  }
+  .vp__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: rgba(242, 237, 232, 0.92);
+    color: var(--text-heading);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.14), inset 0 6px 8px #fff;
+    backdrop-filter: blur(6px);
+    transition: transform 0.15s ease;
+  }
+  .vp__btn:hover { transform: scale(1.06); }
+  .vp__btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .vp__icon--sound,
+  .vp:not(.is-muted) .vp__icon--muted { display: none; }
+  .vp:not(.is-muted) .vp__icon--sound { display: flex; }
+</style>
