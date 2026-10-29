@@ -188,6 +188,10 @@ const reviews = await Promise.all(
   .review__more:hover { color: var(--text-heading); }
 
   .review-modal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    height: fit-content;
     width: min(560px, calc(100vw - 32px));
     max-height: calc(100dvh - 48px);
     padding: 0;
