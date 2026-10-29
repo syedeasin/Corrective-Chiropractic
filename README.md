@@ -33,7 +33,9 @@ Once Kiona is in place, uncomment the preload in `src/layouts/BaseLayout.astro`.
 - `src/styles/global.css` — colour tokens, type scale, breakpoints (mobile < 768, tablet 768–1023, laptop 1024–1679 / 1280 max, desktop ≥ 1680 / 1600 max).
 - `src/components/sections/` — one file per landing section, in page order in `src/pages/index.astro`.
 - `src/components/ui/` — Button, CallCta, Icon, Rating, Stars, VideoModal.
-- `src/assets/images/` — images (optimised to WebP at build time).
+- `src/assets/images/` — source images, all WebP (Astro makes responsive sizes at build time).
+- `src/data/media.ts` — hero, thank-you and session video URLs (currently placeholders from the South Charlotte page).
+- `src/components/ui/VideoPlayer.astro` — inline autoplay video with play/pause, replay and sound buttons.
 - `functions/api/lead.ts` — Cloudflare Pages Function that receives the coverage form.
 
 ## Form / leads
@@ -50,7 +52,6 @@ The `functions/` folder is picked up automatically.
 
 ## Content TODOs
 
-- Session videos: add URLs in `src/components/sections/Sessions.astro` (names/dates there are design placeholders).
-- Thank-you walkthrough video: set `walkthroughVideo` in `src/pages/thank-you.astro`.
+- Videos: swap the placeholder URLs in `src/data/media.ts` for the Newberry clips (session names/dates in `Sessions.astro` are design placeholders).
 - Privacy policy and terms pages are placeholders.
-- Images were exported from Figma at 1x. Swap in the original photos for sharper results on large screens.
+- High-res Figma sources live on the `figma-raw-assets` branch (`design/`).
