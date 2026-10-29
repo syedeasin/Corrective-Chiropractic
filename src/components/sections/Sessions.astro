@@ -1,0 +1,152 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import Rating from '../ui/Rating.astro';
+import VideoModal from '../ui/VideoModal.astro';
+import session1 from '../../assets/images/session-1.png';
+import session2 from '../../assets/images/session-2.png';
+
+// TODO(content): names and dates are placeholders from the design. Add each clip's URL to `video`
+// (an .mp4 in /public/videos, or a YouTube embed URL) and the play button opens it.
+const sessions = [
+  { poster: session1, name: 'Jessica M.', date: 'Mar 22, 2026', video: '' },
+  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
+  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
+  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
+  { poster: session2, name: 'Mark T.', date: 'Feb 18, 2026', video: '' },
+];
+---
+
+<section class="section section--alt sessions" aria-labelledby="sessions-title">
+  <div class="container sessions__inner">
+    <div class="section-head">
+      <p class="eyebrow">See a session</p>
+      <h2 id="sessions-title" class="h2">See What Care <br class="br-desktop" />Actually Looks Like</h2>
+    </div>
+    <Rating size={12} class="sessions__rating" />
+
+    <div class="sessions__track" data-carousel tabindex="0" aria-label="Session videos">
+      {
+        sessions.map((s) => (
+          <article class="session">
+            <Image src={s.poster} alt={`Treatment session with ${s.name}`} widths={[256, 512]} sizes="256px" loading="lazy" />
+            <div class="session__overlay">
+              <button
+                type="button"
+                class="session__play"
+                aria-label={`Play session video: ${s.name}`}
+                data-video={s.video}
+                disabled={!s.video}
+              >
+                <Icon name="play" size={20} strokeWidth={1.8} />
+              </button>
+              <p class="session__meta">
+                <b>{s.name}</b>
+                <span class="session__dot" aria-hidden="true" />
+                <span>{s.date}</span>
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="sessions__progress" aria-hidden="true"><span data-carousel-thumb></span></div>
+  </div>
+  <VideoModal />
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((track) => {
+    const thumb = track.parentElement?.querySelector<HTMLElement>('[data-carousel-thumb]');
+    if (!thumb) return;
+    const update = () => {
+      const visible = track.clientWidth / track.scrollWidth;
+      const max = track.scrollWidth - track.clientWidth;
+      const progress = max > 0 ? track.scrollLeft / max : 0;
+      thumb.style.width = `${Math.min(visible, 1) * 100}%`;
+      thumb.style.transform = `translateX(${progress * (1 / Math.min(visible, 1) - 1) * 100}%)`;
+    };
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>
+
+<style>
+  .sessions__inner { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .sessions :global(.sessions__rating) { margin-top: -0px; }
+
+  .sessions__track {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 24px;
+    margin-bottom: -24px;
+  }
+  .sessions__track::-webkit-scrollbar { display: none; }
+  .session {
+    position: relative;
+    flex: 0 0 255px;
+    height: 458px;
+    border-radius: 12px;
+    overflow: hidden;
+    scroll-snap-align: start;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  }
+  .session img { width: 100%; height: 100%; object-fit: cover; }
+  .session__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(69, 84, 58, 0) 35%, #45543a 90%);
+    box-shadow: inset 0 6px 24px 6px rgba(255, 255, 255, 0.3);
+  }
+  .session__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 51px;
+    height: 42px;
+    border-radius: 17px;
+    background: var(--surface-sand);
+    color: var(--text-heading);
+    box-shadow: 0 8.5px 8.5px rgba(0, 0, 0, 0.12), inset 0 8.5px 10.5px #fff;
+    transition: transform 0.15s ease;
+  }
+  .session__play:not(:disabled):hover { transform: translate(-50%, -50%) scale(1.06); }
+  .session__play:disabled { cursor: default; }
+  .session__meta { display: flex; align-items: center; gap: 6px; color: #fff; font-weight: 700; line-height: 1; }
+  .session__meta b { font-size: 12px; }
+  .session__meta span:last-child { font-size: 10px; color: rgba(255, 255, 255, 0.7); }
+  .session__dot { width: 4px; height: 4px; border-radius: 50%; background: #9fd36b; }
+
+  .sessions__progress {
+    position: relative;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .sessions__progress span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 25%;
+    background: var(--green-700);
+    border-radius: 2px;
+    transition: transform 0.1s linear;
+  }
+</style>

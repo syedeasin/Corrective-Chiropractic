@@ -1,0 +1,51 @@
+---
+// Large two-line call button ("Call us and we'll check for you").
+import { site } from '../../data/site';
+interface Props {
+  eyebrow?: string;
+  class?: string;
+}
+const { eyebrow = "Call us and we'll check for you", class: className } = Astro.props;
+---
+
+<a href={site.phoneHref} class:list={['call-cta', className]}>
+  <span class="call-cta__eyebrow">{eyebrow}</span>
+  <span class="call-cta__number">Call {site.phoneDisplay}</span>
+</a>
+
+<style>
+  .call-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 330px;
+    max-width: 100%;
+    height: 72px;
+    padding-inline: 24px;
+    border-radius: var(--radius);
+    background: var(--green-700);
+    box-shadow: var(--shadow-btn), var(--inset-btn-primary);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.2;
+    transition: filter 0.15s ease;
+  }
+  .call-cta:hover { filter: brightness(1.06); }
+  .call-cta__eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: rgba(245, 245, 231, 0.7);
+    text-box: trim-both cap alphabetic;
+  }
+  .call-cta__number { font-size: 20px; color: var(--text-on-dark); text-box: trim-both cap alphabetic; }
+  @media (min-width: 768px) {
+    .call-cta { height: 92px; }
+  }
+  @media (max-width: 767px) {
+    .call-cta { width: 100%; }
+  }
+</style>

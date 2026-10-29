@@ -1,0 +1,157 @@
+---
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+const faqs = [
+  {
+    q: 'Will my insurance cover chiropractic care after a car accident?',
+    a: 'In most cases, yes. South Carolina auto policies often include Medical Payments coverage, usually called MedPay, which covers medical care after an accident. It applies whether or not the accident was your fault. If you have it, your care is typically billed directly to that coverage. We will check your policy for you before you owe anything.',
+  },
+  {
+    q: 'What is MedPay?',
+    a: 'MedPay is a part of your own auto insurance policy that pays for medical treatment after an accident. It is separate from your health insurance, it usually has no deductible, and it pays regardless of who caused the crash. Most people who have it do not realise it is there. Coverage amounts vary by policy, so we will verify yours before your first visit.',
+  },
+  {
+    q: "What if the accident wasn't my fault?",
+    a: "MedPay still applies. It pays from your own policy without waiting for the other driver's insurer to accept responsibility, which is often the fastest way to start care. Sorting out fault can take months. Your recovery should not have to wait for it.",
+  },
+  {
+    q: 'What if the accident was my fault?',
+    a: 'You are still covered. MedPay pays regardless of fault, so being the at-fault driver does not disqualify you from using it.',
+  },
+  {
+    q: 'Do I need an attorney?',
+    a: 'Not to use MedPay. It is your own coverage and you can use it directly. Some people choose to work with an attorney for other parts of a claim, and that is entirely your decision. Either way, you do not need one to start care with us.',
+  },
+  {
+    q: 'Will using MedPay raise my insurance rates?',
+    a: 'MedPay is coverage you have already paid for, and it is designed to be used. Whether any particular claim affects your premium depends on your carrier and your policy, so it is worth a quick call to your agent if you are unsure. We are happy to walk you through what we see on your coverage.',
+  },
+  {
+    q: 'I feel mostly fine. Should I still get checked?',
+    a: 'Yes, and this is the one we would push hardest on. Soft tissue injuries from a collision often do not show up straight away. Adrenaline masks a lot in the first few days, and neck and back pain frequently appear a week or more after the accident. Getting evaluated early gives you a baseline and catches problems while they are easier to address.',
+  },
+  {
+    q: 'How soon after the accident should I come in?',
+    a: 'The sooner the better, ideally within the first few days. Early evaluation helps clinically, and it also creates a clear record of your injuries close to the date of the accident, which matters if you end up making a claim.',
+  },
+  {
+    q: 'I already went to the emergency room. Do I still need this?',
+    a: 'Usually yes. Emergency care is there to rule out fractures, bleeding and anything immediately dangerous, which is exactly what it should do. It is not designed to assess the spinal and soft tissue injuries that cause the lingering neck and back pain people notice afterwards. That is what we look at.',
+  },
+  { q: 'Do I need a referral?', a: 'No. You can book directly with us.' },
+  {
+    q: 'What happens at my first visit?',
+    a: 'You will sit down with Dr. Hardner and talk through the accident, what you are feeling, and anything that has changed since. She will do a full examination, and digital X-rays if your findings call for them. You will leave understanding what is going on and what a plan to address it looks like.',
+  },
+  {
+    q: "What if I don't have MedPay?",
+    a: 'Not every policy includes it. If yours does not, we will tell you before you owe anything, and our new patient exam is $149. That covers the consultation, examination, digital X-rays, posture analysis and your Spinal Health Score.',
+  },
+  {
+    q: 'How long will I need care?',
+    a: 'That depends on your injuries and what the examination shows. You will get a specific number of visits and defined milestones at your Report of Findings, not an open ended commitment.',
+  },
+];
+
+const half = Math.ceil(faqs.length / 2);
+const columns = [faqs.slice(0, half), faqs.slice(half)];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<section class="section faq" id="faq" aria-labelledby="faq-title">
+  <div class="container faq__inner">
+    <div class="section-head">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faq-title" class="h2">Frequently asked questions</h2>
+    </div>
+
+    <!-- Desktop shows two columns in reading order (left: 1–7, right: 8–13), mobile one list -->
+    <div class="faq__grid" data-faq>
+      {
+        columns.map((col) => (
+          <div class="faq__col">
+            {col.map((f) => (
+              <details class="faq-item" open>
+                <summary>
+                  <span>{f.q}</span>
+                  <Icon name="minus-circle" class="faq-item__minus" />
+                  <Icon name="plus-circle" class="faq-item__plus" />
+                </summary>
+                <div class="faq-item__answer">
+                  <p>{f.a}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="faq__more">
+      <p>Still have questions?</p>
+      <Button href={site.phoneHref} variant="taupe" block>Call {site.phoneDisplay}</Button>
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</section>
+
+<script>
+  // Everything starts open like the design. On phones and tablets, collapse all but the first
+  // so the list stays short.
+  if (window.matchMedia('(max-width: 1023px)').matches) {
+    document.querySelectorAll<HTMLDetailsElement>('[data-faq] details').forEach((d, i) => {
+      if (i > 0) d.open = false;
+    });
+  }
+</script>
+
+<style>
+  .faq__inner { display: flex; flex-direction: column; align-items: center; gap: 40px; }
+  .faq__grid { display: grid; gap: 16px; width: 100%; }
+  .faq__col { display: flex; flex-direction: column; gap: 16px; }
+
+  .faq-item {
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+    padding: 16px;
+    background: var(--surface-page);
+  }
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-heading);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary span { flex: 1; }
+  .faq-item summary :global(.icon) { color: var(--text-strong); }
+  .faq-item :global(.faq-item__plus) { display: none; }
+  .faq-item:not([open]) :global(.faq-item__plus) { display: block; }
+  .faq-item:not([open]) :global(.faq-item__minus) { display: none; }
+  .faq-item__answer {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-default);
+  }
+  .faq-item__answer p { font-size: 14px; line-height: 1.5; color: var(--text-body); }
+
+  .faq__more { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; max-width: 345px; }
+  .faq__more p { font-size: 14px; line-height: 1.5; color: var(--text-strong); }
+
+  @media (min-width: 1024px) {
+    .faq__grid { grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .faq__col { gap: 24px; }
+  }
+</style>

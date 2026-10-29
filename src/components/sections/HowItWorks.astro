@@ -1,0 +1,104 @@
+---
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+const steps = [
+  {
+    title: 'Call us or book online',
+    text: "Tell us you were in an accident and give us your insurance information. That's all we need to get started.",
+  },
+  {
+    title: 'We check your coverage',
+    text: "Before your first visit, we verify what your policy covers so you know exactly where you stand. There's no cost for this and no obligation to book.",
+  },
+  {
+    title: 'Come in for your exam',
+    // TODO(content): design still has "[PLACEHOLDER: same-week appointments available]" after this sentence.
+    text: 'A full exam, digital X-rays, posture analysis, and a care plan built around what the accident actually did to your spine. Same-week appointments available.',
+  },
+  {
+    title: 'We handle the billing',
+    text: "We bill your auto insurance directly. You don't file anything, you don't front the cost, and you don't wait on a settlement.",
+  },
+];
+---
+
+<section class="section how" id="how-it-works" aria-labelledby="how-title">
+  <div class="container how__inner">
+    <div class="section-head">
+      <p class="eyebrow">How it works</p>
+      <h2 id="how-title" class="h2">Getting started takes <br class="br-desktop" />one phone call.</h2>
+      <p class="lead how__sub"><strong>No paperwork</strong> to figure out, no attorney to hire, no bills to chase down.</p>
+    </div>
+
+    <ol class="how__steps">
+      {
+        steps.map((s, i) => (
+          <li class="step">
+            <span class="step__num" aria-hidden="true">
+              {i + 1}
+            </span>
+            <div class="step__body">
+              <h3 class="label">{s.title}</h3>
+              <p>{s.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <Button href={site.ctaHref}>Check my coverage</Button>
+  </div>
+</section>
+
+<style>
+  .how__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 47px;
+  }
+  .how__sub { color: var(--text-muted); }
+  .how__sub strong { font-weight: 500; color: var(--text-heading); }
+
+  .how__steps {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    max-width: 534px;
+  }
+  /* connecting line behind the numbers */
+  .how__steps::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 9px;
+    bottom: 40px;
+    width: 1px;
+    background: var(--border-default);
+  }
+  .step { position: relative; display: flex; gap: 24px; align-items: flex-start; }
+  .step__num {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 32px;
+    border-radius: 16px;
+    background: var(--green-700);
+    box-shadow: var(--shadow-btn), var(--inset-btn-primary);
+    color: var(--text-on-dark);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .step__body { display: flex; flex-direction: column; gap: 8px; padding-top: 7px; }
+  .step__body p { font-size: 16px; line-height: 1.5; color: var(--text-muted); }
+
+  @media (min-width: 1024px) {
+    .how { padding-block: calc(var(--section-y) - 0px); }
+  }
+</style>

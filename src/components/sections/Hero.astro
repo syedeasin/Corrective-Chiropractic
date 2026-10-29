@@ -1,0 +1,129 @@
+---
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import Rating from '../ui/Rating.astro';
+import heroImg from '../../assets/images/hero.png';
+import { site } from '../../data/site';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__copy">
+    <div class="hero__text">
+      <div class="hero__titles">
+        <p class="eyebrow">Auto injury care in Newberry, SC</p>
+        <h1 id="hero-title" class="h1">Injured in a car accident? You may already be covered.</h1>
+      </div>
+      <p class="lead">
+        No attorney, no referral, no waiting on a settlement. Most auto policies in South Carolina include MedPay
+        coverage you can use right now.
+      </p>
+    </div>
+    <div class="hero__actions">
+      <Button href={site.ctaHref}>Check my coverage</Button>
+      <Button href={site.phoneHref} variant="secondary">Call {site.phoneDisplay}</Button>
+    </div>
+    <Rating class="hero__rating" />
+  </div>
+
+  <div class="hero__media">
+    <Image
+      src={heroImg}
+      alt="Dr. Jessica Hardner adjusting a patient at Corrective Chiropractic in Newberry"
+      widths={[480, 768, 916]}
+      sizes="(min-width: 1024px) 50vw, 100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-page);
+  }
+  .hero__copy {
+    width: var(--container);
+    margin-inline: auto;
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 32px;
+  }
+  .hero__text { display: flex; flex-direction: column; gap: 16px; }
+  .hero__titles { display: flex; flex-direction: column; gap: 8px; }
+  .hero__actions { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+  .hero__actions :global(.btn) { width: 100%; }
+  .hero__rating { margin-top: -8px; }
+
+  .hero__media {
+    position: relative;
+    height: 600px;
+    margin-top: 40px;
+  }
+  .hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 30%;
+  }
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, #fafcfb 0%, rgba(250, 252, 251, 0) 16%),
+      linear-gradient(0deg, #fafcfb 0%, rgba(250, 252, 251, 0) 16%);
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero__copy {
+      padding-top: 64px;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .hero__actions { flex-direction: row; width: auto; }
+    .hero__actions :global(.btn) { width: auto; }
+    .hero__rating { margin-top: 16px; }
+    .hero__media { height: 560px; margin-top: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 64px;
+      padding-left: max(var(--gutter), calc((100% - var(--container-max)) / 2));
+    }
+    .hero__copy {
+      flex: 0 0 min(620px, 46%);
+      width: auto;
+      margin: 0;
+      padding: 96px 0 64px;
+      justify-content: center;
+      gap: 32px;
+    }
+    .hero__rating { margin-top: 16px; }
+    .hero__media {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 720px;
+      margin: 0;
+    }
+    .hero__media::after {
+      background:
+        linear-gradient(180deg, rgba(250, 252, 251, 0) 57%, #fafcfb 100%),
+        linear-gradient(180deg, #fafcfb 0%, rgba(250, 252, 251, 0) 22%),
+        linear-gradient(90deg, #fafcfb 0%, rgba(250, 252, 251, 0) 8%);
+    }
+  }
+
+  @media (min-width: 1680px) {
+    .hero__copy { flex-basis: 780px; }
+    .hero__media { height: 840px; }
+  }
+</style>

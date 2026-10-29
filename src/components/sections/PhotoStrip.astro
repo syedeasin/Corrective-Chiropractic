@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import exterior from '../../assets/images/strip-exterior.png';
+import treatment from '../../assets/images/strip-treatment-room.png';
+import waiting from '../../assets/images/strip-waiting-room.png';
+
+const photos = [
+  { src: exterior, alt: 'Outside the Corrective Chiropractic clinic on Calhoun Street' },
+  { src: treatment, alt: 'Treatment room' },
+  { src: waiting, alt: 'Waiting room with coffee bar' },
+];
+// Repeat so the strip is wider than any screen, then double it for a seamless loop.
+const set = [...photos, ...photos, ...photos];
+---
+
+<section class="strip" aria-label="Inside the clinic">
+  <div class="strip__track">
+    {
+      [0, 1].map((copy) => (
+        <ul class="strip__set" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {set.map((p) => (
+            <li>
+              <Image src={p.src} alt={copy === 1 ? '' : p.alt} widths={[216, 432]} sizes="216px" loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .strip {
+    overflow: hidden;
+    padding-block: 0 var(--section-y);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .strip__track { display: flex; width: max-content; animation: strip 60s linear infinite; }
+  .strip:hover .strip__track { animation-play-state: paused; }
+  .strip__set { display: flex; gap: 16px; padding-right: 16px; }
+  .strip__set li { flex: none; width: 216px; height: 289px; border-radius: 21px; overflow: hidden; }
+  .strip__set img { width: 100%; height: 100%; object-fit: cover; }
+  @keyframes strip { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .strip__track { animation: none; }
+    .strip { overflow-x: auto; }
+  }
+</style>

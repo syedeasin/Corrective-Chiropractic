@@ -1,0 +1,86 @@
+---
+// Buttons and pills from the Components page.
+// variant: primary (green), secondary (sand), taupe (FAQ call), light (Book pill), peach (Get directions)
+// size: md = 16px label (49px tall, 46px on mobile), sm = 14px, xs = 10px
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'> & {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'taupe' | 'light' | 'peach';
+  size?: 'md' | 'sm' | 'xs';
+  block?: boolean;
+  type?: 'button' | 'submit';
+  class?: string;
+};
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  block = false,
+  type = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = ['btn', `btn--${variant}`, `btn--${size}`, block && 'btn--block', className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <span class="btn__label"><slot /></span>
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...(rest as HTMLAttributes<'button'>)}>
+      <span class="btn__label"><slot /></span>
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: center;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: translateY(1px); }
+
+  /* Cap-height trim keeps the uppercase label optically centred (Button/* text styles). */
+  .btn__label { display: block; text-box: trim-both cap alphabetic; }
+
+  .btn--md { height: var(--btn-h); padding-inline: 24px; font-size: 16px; }
+  .btn--sm { height: 35px; padding-inline: 12px; font-size: 14px; }
+  .btn--xs { height: 24px; padding-inline: 8px; font-size: 10px; letter-spacing: 0.02em; }
+  .btn--block { display: flex; width: 100%; }
+
+  .btn--primary {
+    background: var(--green-700);
+    color: var(--text-on-dark);
+    box-shadow: var(--shadow-btn), var(--inset-btn-primary);
+  }
+  .btn--secondary { background: var(--surface-sand); color: var(--text-body); }
+  .btn--taupe {
+    background: var(--surface-taupe);
+    color: rgba(2, 4, 8, 0.8);
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.08), inset 0 8px 10px 0 #e9e3dd;
+  }
+  .btn--light {
+    background: #f8f5f2;
+    color: var(--text-heading);
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.08), inset 0 8px 10px 0 #fff;
+  }
+  .btn--peach { background: var(--surface-peach); color: var(--text-heading); }
+</style>

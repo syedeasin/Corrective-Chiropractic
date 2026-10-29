@@ -1,0 +1,32 @@
+---
+// "★★★★★ 4.9 STARS ACROSS 98+ REVIEWS"
+import Stars from './Stars.astro';
+import { site } from '../../data/site';
+interface Props {
+  size?: 12 | 14;
+  class?: string;
+}
+const { size = 14, class: className } = Astro.props;
+---
+
+<p class:list={['rating', `rating--${size}`, className]}>
+  <Stars />
+  <span><strong>{site.rating} stars</strong> across {site.reviewCount} reviews</span>
+</p>
+
+<style>
+  .rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: rgba(2, 4, 8, 0.4);
+    white-space: nowrap;
+  }
+  .rating strong { color: #000; font-weight: 600; }
+  .rating--14 { font-size: 14px; }
+  .rating--12 { font-size: 12px; letter-spacing: 0.02em; }
+</style>

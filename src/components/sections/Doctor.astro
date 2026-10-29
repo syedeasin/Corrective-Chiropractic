@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import doctorImg from '../../assets/images/doctor.png';
+---
+
+<section class="section doctor" id="your-doctor" aria-labelledby="doctor-title">
+  <div class="container doctor__inner">
+    <Image
+      src={doctorImg}
+      alt="Dr. Jessica Hardner, DC"
+      widths={[328, 537, 1074]}
+      sizes="(min-width: 1024px) 537px, (min-width: 768px) 360px, 164px"
+      class="doctor__photo"
+      loading="lazy"
+    />
+    <div class="doctor__copy">
+      <p class="eyebrow">Meet your doctor</p>
+      <h2 id="doctor-title" class="h3">Dr. Jessica Hardner</h2>
+      <p class="doctor__role">DC, Clinic Director</p>
+      <div class="doctor__bio">
+        <p>
+          Dr. Jessica came to this work through experience, not theory. Her path started on a medical mission trip that
+          opened her eyes to natural healing and sparked a lasting interest in the nervous system and how the body moves.
+          She earned her undergraduate degree in sports medicine and exercise science from Mercyhurst University and her
+          Doctor of Chiropractic from Sherman College of Chiropractic.
+        </p>
+        <p>
+          She's been treating auto accident injuries in Newberry for years, and local attorneys refer their clients to
+          her when those cases need documented care. Patients tend to use the same word about her exams: thorough. She'd
+          rather take the extra time and find what's actually going on than move you through quickly.
+        </p>
+        <p>
+          Outside the clinic she's a competitive Irish dancer, teaches at Newberry College, and you'll find her at the
+          farmers market most weekends. She sponsors the local swim team and runs a yearly fundraiser for the food
+          pantry. This is her community, not just where her office happens to be.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .doctor__inner { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .doctor__inner :global(.doctor__photo) {
+    width: 164px;
+    height: 164px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+  }
+  .doctor__copy { display: flex; flex-direction: column; gap: 16px; text-align: center; }
+  .doctor__role { font-size: 18px; line-height: 1.3; color: var(--text-body); }
+  .doctor__bio { display: flex; flex-direction: column; gap: 12px; font-size: 16px; line-height: 1.7; color: var(--text-body); }
+
+  @media (min-width: 768px) {
+    .doctor__inner :global(.doctor__photo) { width: 360px; height: 360px; }
+  }
+  @media (min-width: 1024px) {
+    .doctor__inner { flex-direction: row; justify-content: space-between; gap: 64px; }
+    .doctor__inner :global(.doctor__photo) { width: min(537px, 42%); height: auto; aspect-ratio: 1; }
+    .doctor__copy { flex: 0 1 647px; text-align: left; }
+  }
+  @media (min-width: 1680px) {
+    .doctor__inner { justify-content: center; gap: 120px; }
+    .doctor__copy { flex-basis: 760px; }
+  }
+</style>

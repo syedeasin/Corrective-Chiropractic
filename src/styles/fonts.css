@@ -1,0 +1,65 @@
+/*
+  Brand fonts: Kiona (display, buttons, labels) and Helvetica Neue (body).
+
+  These are licensed local files, so they are not in the repo yet.
+  Drop the WOFF2 files into /public/fonts using the file names below and they load automatically.
+  Until then the site falls back to Josefin Sans and Inter, the same stand-ins the Figma file uses.
+
+  Convert OTF/TTF to WOFF2 with e.g. https://transfonter.org or `npx ttf2woff2`.
+*/
+
+@font-face {
+  font-family: 'Kiona';
+  src: local('Kiona'), local('Kiona-Regular'), url('/fonts/Kiona-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kiona';
+  src: local('Kiona SemiBold'), local('Kiona-SemiBold'), url('/fonts/Kiona-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue'), local('HelveticaNeue'), url('/fonts/HelveticaNeue-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue Italic'), local('HelveticaNeue-Italic'), url('/fonts/HelveticaNeue-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue Medium'), local('HelveticaNeue-Medium'), url('/fonts/HelveticaNeue-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue Bold'), local('HelveticaNeue-Bold'), url('/fonts/HelveticaNeue-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue Bold Italic'), local('HelveticaNeue-BoldItalic'), url('/fonts/HelveticaNeue-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}

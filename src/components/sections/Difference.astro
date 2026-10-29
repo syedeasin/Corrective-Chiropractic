@@ -1,0 +1,354 @@
+---
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import symptomaticImg from '../../assets/images/diff-symptomatic.png';
+import correctiveImg from '../../assets/images/diff-corrective.png';
+import xrayImg from '../../assets/images/results-xray.png';
+import avatarIcon from '../../assets/images/icon-avatar.png';
+import benefitSpinal from '../../assets/images/benefit-spinal.png';
+import benefitPosture from '../../assets/images/benefit-posture.png';
+import benefitMovement from '../../assets/images/benefit-movement.png';
+import benefitProgress from '../../assets/images/benefit-progress.png';
+import Icon from '../ui/Icon.astro';
+import { site } from '../../data/site';
+
+const compare = [
+  {
+    img: symptomaticImg,
+    alt: 'An empty treatment table in a plain clinic room',
+    title: 'Symptomatic Care',
+    text: "You come in hurting. They adjust you. You feel better for a few days, then you're back. Nothing gets measured, nothing gets recorded, and there's no way to show what the accident did or whether you're improving.",
+  },
+  {
+    img: correctiveImg,
+    alt: 'A chiropractor adjusting a patient lying on a treatment table',
+    title: 'Corrective Care',
+    text: "We take X-rays and find the structural problem. We show you exactly what's wrong, explain why it's causing your symptoms, and build a plan with a beginning, middle, and end. Every visit is documented, so your progress is on record.",
+  },
+];
+
+const metrics = [
+  { name: 'Scoliosis', before: '19.2', after: '3.9', change: '-80%' },
+  { name: 'Subluxations', before: '12', after: '5', change: '-58%' },
+  { name: 'Hip Alignment', before: '9.17', after: '2.09', change: '-77%' },
+];
+
+const benefits = [
+  { icon: benefitSpinal, label: 'Better spinal function' },
+  { icon: benefitPosture, label: 'Improved posture' },
+  { icon: benefitMovement, label: 'Better movement' },
+  { icon: benefitProgress, label: 'Documented progress' },
+];
+---
+
+<section class="section diff" aria-labelledby="diff-title">
+  <div class="container diff__inner">
+    <div class="section-head diff__head">
+      <p class="eyebrow">The difference that actually matters</p>
+      <h2 id="diff-title" class="h2">Most clinics treat what hurts. We document what changed.</h2>
+      <p class="lead">
+        After an accident, "how are you feeling?" isn't enough. Pain moves around, fades, and comes back. What matters is
+        what actually shifted in your spine, and whether it's shifting back. That takes imaging, not guesswork.
+      </p>
+    </div>
+
+    <div class="diff__compare">
+      {
+        compare.map((c) => (
+          <article class="compare-card">
+            <Image src={c.img} alt={c.alt} widths={[320, 632]} sizes="(min-width: 1024px) 320px, 50vw" class="compare-card__img" />
+            <div class="compare-card__body">
+              <h3 class="title-18">{c.title}</h3>
+              <p>{c.text}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="results">
+      <div class="results__copy">
+        <div class="results__head">
+          <h2 class="results__title">
+            <span>Real results</span>
+            <span>Measured improvement</span>
+          </h2>
+          <p class="results__sub">Objective Spinal Health Score Improvement</p>
+        </div>
+
+        <p class="results__delta">
+          <strong>+18</strong>
+          <span>Points<br />in 3 months</span>
+        </p>
+
+        <div class="score-card">
+          <div class="score-card__patient">
+            <div class="score-card__who">
+              <Image src={avatarIcon} alt="" width={26} height={26} />
+              <span class="score-card__name">Robert M.</span>
+              <span class="score-card__dot" aria-hidden="true"></span>
+              <span class="score-card__age">Age 33</span>
+            </div>
+            <span class="score-card__badge">in 3 months</span>
+          </div>
+
+          <table class="score-card__table">
+            <thead>
+              <tr><th scope="col">Metric</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Change</th></tr>
+            </thead>
+            <tbody>
+              {
+                metrics.map((m) => (
+                  <tr>
+                    <th scope="row">{m.name}</th>
+                    <td>{m.before}</td>
+                    <td>{m.after}</td>
+                    <td>{m.change}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          <div class="score-card__grades">
+            <div class="grade"><span class="grade__letter">D+</span><span class="grade__score"><b>67</b>/100</span></div>
+            <span class="grade__arrow" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
+            <div class="grade"><span class="grade__letter">A-</span><span class="grade__score"><b>83</b>/100</span></div>
+          </div>
+        </div>
+
+        <div class="results__lists">
+          <div>
+            <h3 class="results__list-title results__list-title--muted">At intake</h3>
+            <ul><li>Neck pain &amp; stiffness</li><li>Headaches</li><li>Limited range of motion</li><li>Trouble turning to drive</li></ul>
+          </div>
+          <div>
+            <h3 class="results__list-title">After care</h3>
+            <ul><li>Full range of motion</li><li>Headaches resolved</li><li>Sleeping through the night</li><li>Back to driving comfortably</li></ul>
+          </div>
+        </div>
+
+        <Button href={site.ctaHref} class="results__cta">Check my coverage</Button>
+      </div>
+
+      <div class="results__media">
+        <Image
+          src={xrayImg}
+          alt="Neck X-rays before care with a reversed curve, and after care with the curve restored"
+          widths={[608]}
+          sizes="(min-width: 1024px) 608px, 100vw"
+          class="results__xray"
+        />
+        <ul class="results__benefits">
+          {
+            benefits.map((b) => (
+              <li>
+                <Image src={b.icon} alt="" width={20} height={20} />
+                {b.label}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .diff__inner { display: flex; flex-direction: column; gap: 64px; }
+  .diff__head { max-width: 859px; margin-inline: auto; }
+
+  /* Symptomatic vs corrective */
+  .diff__compare { display: grid; gap: 16px; }
+  .compare-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-sand);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .compare-card :global(.compare-card__img) {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .compare-card__body { display: flex; flex-direction: column; gap: 8px; padding: 24px; }
+  .compare-card__body p { font-size: 16px; line-height: 1.5; color: var(--text-body); }
+
+  /* Results */
+  .results { display: flex; flex-direction: column; gap: 40px; }
+  .results__copy { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+  .results__head { display: flex; flex-direction: column; gap: 16px; }
+  .results__title {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    color: var(--text-heading);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .results__title span:first-child { font-size: calc(var(--h2) + 8px); }
+  .results__title span:last-child { font-size: var(--h2); }
+  .results__sub { font-size: 18px; line-height: 1.7; color: var(--text-body); }
+  .results__delta { display: flex; align-items: center; gap: 8px; }
+  .results__delta strong { font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--text-heading); }
+  .results__delta span {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .score-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px 16px;
+    background: var(--surface-sand);
+    border: 2px solid #f4ede6;
+    border-radius: var(--radius);
+    box-shadow: var(--inset-card);
+  }
+  .score-card__patient {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(485px, 100%);
+    margin-inline: auto;
+    padding: 16px;
+    background: var(--surface-sand-dark);
+  }
+  .score-card__who { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .score-card__who img { width: 26px; height: 26px; margin-right: 6px; }
+  .score-card__name { font-size: 20px; font-weight: 500; line-height: 1.3; color: var(--text-heading); white-space: nowrap; }
+  .score-card__dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(0, 0, 0, 0.14); }
+  .score-card__age { font-size: 16px; color: var(--text-heading); white-space: nowrap; }
+  .score-card__badge {
+    flex: none;
+    padding: 7px 8px;
+    border-radius: 16px;
+    background: var(--green-700);
+    box-shadow: var(--shadow-btn), inset 0 8px 10px rgba(99, 121, 83, 0.5);
+    color: var(--text-on-dark);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .score-card__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-weight: 500;
+    line-height: 1.5;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-default);
+  }
+  .score-card__table th,
+  .score-card__table td { padding: 4px 0; text-align: right; width: 25%; }
+  .score-card__table th:first-child { text-align: left; }
+  .score-card__table thead th { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+  .score-card__table tbody { font-size: 16px; color: var(--text-heading); }
+  .score-card__table tbody th { font-weight: 500; }
+  .score-card__table tbody tr:last-child > * { padding-bottom: 16px; }
+
+  .score-card__grades { position: relative; display: flex; gap: 8px; }
+  .grade {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    height: 66px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-sand-dark);
+    box-shadow: inset 0 6px 16px 6px rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    text-transform: uppercase;
+    color: var(--text-heading);
+  }
+  .grade__letter {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+  }
+  .grade__score {
+    padding: 6px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: var(--font-display);
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .grade__score b { font-weight: 600; letter-spacing: 0.02em; }
+  .grade__arrow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--surface-sand);
+    box-shadow: 0 6.5px 6.5px rgba(0, 0, 0, 0.12), inset 0 6.5px 8px #fff;
+    color: var(--text-heading);
+  }
+
+  .results__lists { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .results__lists > div { display: flex; flex-direction: column; gap: 8px; }
+  .results__list-title { font-size: 16px; font-weight: 500; line-height: 1.2; color: var(--text-heading); }
+  .results__list-title--muted { color: #686868; }
+  .results__lists ul { font-size: 12px; line-height: 1.5; color: var(--text-body); }
+  .results__copy :global(.results__cta) { align-self: flex-start; }
+
+  .results__media { display: flex; flex-direction: column; align-items: center; gap: 32px; min-width: 0; }
+  .results__media :global(.results__xray) { width: 100%; max-width: 628px; height: auto; }
+  .results__benefits {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 16px;
+    font-size: 10px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--text-heading);
+  }
+  .results__benefits li { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .results__benefits li:last-child { text-transform: none; }
+  .results__benefits img { width: 20px; height: 20px; border-radius: 50%; }
+
+  @media (max-width: 767px) {
+    .results { gap: 78px; }
+    .score-card__name { font-size: 16px; }
+    .score-card__age { font-size: 14px; }
+    .score-card__table tbody { font-size: 14px; }
+    .results__copy :global(.results__cta) { align-self: stretch; }
+  }
+
+  @media (min-width: 768px) {
+    .compare-card { flex-direction: row; align-items: center; }
+    .compare-card :global(.compare-card__img) { width: 50%; height: 276px; flex: none; }
+    .compare-card__body { flex: 1; }
+  }
+
+  @media (min-width: 1024px) {
+    .diff__compare { grid-template-columns: 1fr 1fr; }
+    .results { flex-direction: row; align-items: center; gap: 64px; }
+    .results__copy,
+    .results__media { flex: 1 1 0; }
+  }
+  @media (min-width: 1680px) {
+    .compare-card :global(.compare-card__img) { width: 396px; }
+  }
+</style>

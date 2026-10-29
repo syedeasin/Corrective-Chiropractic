@@ -1,0 +1,7 @@
+# Cloudflare Pages project settings (used by `npm run preview:cf` and `npm run deploy`).
+name = "corrective-chiropractic"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"
+
+# Set LEAD_WEBHOOK_URL in the Cloudflare dashboard (Settings → Variables and Secrets)
+# or in a local .dev.vars file. See README.md.

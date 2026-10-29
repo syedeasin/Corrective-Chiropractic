@@ -1,0 +1,143 @@
+---
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import treatImg from '../../assets/images/treat.png';
+import neck from '../../assets/images/cond-neck.png';
+import headache from '../../assets/images/cond-headache.png';
+import lowback from '../../assets/images/cond-lowback.png';
+import disc from '../../assets/images/cond-disc.png';
+import sciatica from '../../assets/images/cond-sciatica.png';
+import shoulder from '../../assets/images/cond-shoulder.png';
+import decompression from '../../assets/images/cond-decompression.png';
+import numbness from '../../assets/images/cond-numbness.png';
+import { site } from '../../data/site';
+
+const conditions = [
+  { icon: neck, title: 'Neck Pain', text: "Limited range of motion, pain turning your head to check a blind spot, tension that settles in and doesn't leave." },
+  { icon: headache, title: 'Headaches & Migraines', text: 'Headaches that started after the accident, often coming from the upper neck rather than the head itself.' },
+  { icon: lowback, title: 'Low Back Pain', text: "Impact and bracing put force through the lower spine. Pain that's worse getting in and out of the car is a common sign." },
+  { icon: disc, title: 'Herniated & Bulging Discs', text: "Crash force can push a disc out of position. Most clinics can't identify this without imaging, which is why the X-rays matter." },
+  { icon: sciatica, title: 'Sciatica', text: 'Sharp pain running down the leg, typically from a disc or nerve issue in the lower back.' },
+  { icon: shoulder, title: 'Shoulder & Upper Back Pain', text: 'Seatbelt and bracing injuries across the shoulder, chest, and upper back that get dismissed as bruising.' },
+  { icon: decompression, title: 'Spinal Decompression', text: "For disc injuries that don't respond to adjustments alone. We have decompression tables on-site in Newberry." },
+  { icon: numbness, title: 'Numbness and Tingling', text: 'Pins and needles in the arms or hands usually means a nerve is being compressed somewhere along the spine.' },
+];
+---
+
+<section class="section section--alt treat" id="what-we-treat" aria-labelledby="treat-title">
+  <div class="container treat__inner">
+    <div class="treat__intro">
+      <div class="treat__copy">
+        <div class="treat__head">
+          <p class="eyebrow">What we treat</p>
+          <h2 id="treat-title" class="h2">What a crash actually does to your spine.</h2>
+        </div>
+        <p class="lead">
+          Even a low-speed collision puts force through your neck and back that your body isn't built to absorb. These
+          are the injuries we see most often after an accident. If yours isn't on the list, book an exam and we'll tell
+          you straight whether we can help.
+        </p>
+        <article class="whiplash">
+          <h3 class="title-18">Whiplash</h3>
+          <p>
+            The neck moves further and faster than it's designed to, straining the muscles, ligaments, and joints that
+            hold it in place. Symptoms often don't show up until a day or two later, and they can linger for months
+            without proper care. We use X-rays to see what actually shifted, not just where it hurts.
+          </p>
+          <hr class="divider" />
+          <p class="whiplash__note"><b>Included</b> in your care plan if <br />your exam shows you need it.</p>
+        </article>
+      </div>
+      <div class="treat__media">
+        <Image
+          src={treatImg}
+          alt="Dr. Jessica Hardner treating a patient after a car accident"
+          widths={[608]}
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <ul class="treat__grid">
+      {
+        conditions.map((c) => (
+          <li class="condition">
+            <Image src={c.icon} alt="" width={56} height={56} densities={[1, 2, 3]} />
+            <div>
+              <h3 class="title-16">{c.title}</h3>
+              <p class="body-14">{c.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="treat__footer">
+      <p class="lead">Not sure if what you're feeling is from the accident? Book an exam and we'll tell you either way.</p>
+      <Button href={site.ctaHref}>Check my coverage</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .treat__inner { display: flex; flex-direction: column; gap: 64px; }
+  .treat__intro { display: flex; flex-direction: column; gap: 40px; }
+  .treat__copy { display: flex; flex-direction: column; gap: 24px; }
+  .treat__head { display: flex; flex-direction: column; gap: 16px; }
+  .whiplash {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-float);
+  }
+  .whiplash p { font-size: 16px; line-height: 1.5; color: var(--text-body); }
+  .whiplash .whiplash__note { font-size: 14px; line-height: 1.3; font-style: italic; }
+  .whiplash__note b { font-weight: 700; }
+  .treat__media img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+
+  .treat__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .condition {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 24px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+  }
+  .condition img { flex: none; width: 56px; height: 56px; }
+  .condition div { display: flex; flex-direction: column; gap: 4px; }
+
+  .treat__footer { display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center; }
+
+  @media (max-width: 767px) {
+    .treat__head, .treat__copy > .lead { text-align: center; }
+    .condition { gap: 16px; padding: 20px; }
+  }
+
+  @media (min-width: 768px) {
+    .treat__grid { grid-template-columns: repeat(2, 1fr); }
+    .treat__media img { height: 520px; }
+  }
+
+  @media (min-width: 1024px) {
+    .treat__intro { flex-direction: row; align-items: center; gap: 64px; }
+    .treat__copy, .treat__media { flex: 1 1 0; min-width: 0; }
+    .treat__media img { height: 600px; }
+    /* 3 + 3 + 2 rows, last row centred like the design */
+    .treat__grid { display: flex; flex-wrap: wrap; justify-content: center; }
+    .condition { flex: 0 0 calc((100% - 32px) / 3); }
+  }
+</style>

@@ -1,0 +1,164 @@
+---
+import { Image } from 'astro:assets';
+import Button from './ui/Button.astro';
+import Icon from './ui/Icon.astro';
+import logo from '../assets/images/logo.png';
+import { site } from '../data/site';
+
+interface Props {
+  /** Thank-you page shows only the call button. */
+  minimal?: boolean;
+}
+const { minimal = false } = Astro.props;
+
+const navLinks = [
+  { href: '/#how-it-works', label: 'How it works' },
+  { href: '/#what-we-treat', label: 'What we treat' },
+  { href: '/#your-doctor', label: 'Your doctor' },
+  { href: '/#reviews', label: 'Reviews' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '/#location', label: 'Location' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <div class="site-header__brand">
+      {
+        !minimal && (
+          <button
+            class="site-header__menu-btn"
+            type="button"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            data-menu-open
+          >
+            <Icon name="menu" size={24} />
+          </button>
+        )
+      }
+      <a href="/" class="site-header__logo" aria-label={`${site.name} home`}>
+        <Image src={logo} alt={site.name} width={111} height={47} loading="eager" />
+      </a>
+    </div>
+
+    <div class="site-header__actions">
+      <Button href={site.phoneHref} variant="secondary" class="site-header__call">
+        Call {site.phoneDisplay}
+      </Button>
+      {!minimal && <Button href={site.ctaHref} class="site-header__cta">Check my coverage</Button>}
+      {!minimal && <Button href={site.ctaHref} variant="light" size="sm" class="site-header__book">Book</Button>}
+      {minimal && <Button href={site.phoneHref} variant="light" size="sm" class="site-header__book">Call us</Button>}
+    </div>
+  </div>
+
+  {
+    !minimal && (
+      <div class="mobile-menu" id="mobile-menu" hidden data-menu>
+        <nav aria-label="Page sections">
+          <ul>
+            {navLinks.map((l) => (
+              <li>
+                <a href={l.href} data-menu-link>
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div class="mobile-menu__actions">
+          <Button href={site.ctaHref} block data-menu-link>
+            Check my coverage
+          </Button>
+          <Button href={site.phoneHref} variant="secondary" block>
+            Call {site.phoneDisplay}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const openBtn = header?.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const menu = header?.querySelector<HTMLElement>('[data-menu]');
+
+  if (header && openBtn && menu) {
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      openBtn.setAttribute('aria-expanded', String(open));
+      openBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      header.classList.toggle('is-open', open);
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+    };
+    openBtn.addEventListener('click', () => setOpen(menu.hidden));
+    menu.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+    window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => e.matches && setOpen(false));
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--surface-page);
+    border-bottom: 1px solid var(--border-default);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 16px;
+  }
+  .site-header__brand { display: flex; align-items: center; gap: 10px; }
+  .site-header__logo img { width: 111px; height: auto; }
+  .site-header__menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--text-body);
+  }
+  .site-header__actions { display: flex; align-items: center; gap: 12px; }
+  .site-header :global(.site-header__call),
+  .site-header :global(.site-header__cta) { display: none; }
+  .site-header :global(.site-header__book) { height: 32px; }
+
+  /* Mobile menu drawer */
+  .mobile-menu {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    background: var(--surface-page);
+    padding: 24px var(--gutter) 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu ul { display: flex; flex-direction: column; }
+  .mobile-menu li a {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-default);
+    font-family: var(--font-display);
+    font-size: 20px;
+    text-transform: uppercase;
+    color: var(--text-heading);
+  }
+  .mobile-menu__actions { display: flex; flex-direction: column; gap: 12px; }
+
+  @media (min-width: 768px) {
+    .site-header__inner { padding-block: 20px; }
+    .site-header__menu-btn,
+    .site-header :global(.site-header__book) { display: none; }
+    .site-header :global(.site-header__call),
+    .site-header :global(.site-header__cta) { display: inline-flex; }
+  }
+</style>

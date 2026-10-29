@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Hero from '../components/sections/Hero.astro';
+import MedPay from '../components/sections/MedPay.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import FeelingOkay from '../components/sections/FeelingOkay.astro';
+import Difference from '../components/sections/Difference.astro';
+import WhatWeTreat from '../components/sections/WhatWeTreat.astro';
+import Doctor from '../components/sections/Doctor.astro';
+import Sessions from '../components/sections/Sessions.astro';
+import Reviews from '../components/sections/Reviews.astro';
+import Exam from '../components/sections/Exam.astro';
+import Faq from '../components/sections/Faq.astro';
+import Location from '../components/sections/Location.astro';
+import LeadForm from '../components/sections/LeadForm.astro';
+import PhotoStrip from '../components/sections/PhotoStrip.astro';
+---
+
+<BaseLayout
+  title="Car Accident Chiropractor in Newberry, SC | Corrective Chiropractic"
+  description="Hurt in a car accident? Your MedPay coverage may pay for chiropractic care. We check your coverage for you. Same-week appointments in Newberry, SC."
+>
+  <SiteHeader />
+  <main id="main">
+    <Hero />
+    <MedPay />
+    <HowItWorks />
+    <FeelingOkay />
+    <Difference />
+    <WhatWeTreat />
+    <Doctor />
+    <Sessions />
+    <Reviews />
+    <Exam />
+    <Faq />
+    <Location />
+    <LeadForm />
+    <PhotoStrip />
+  </main>
+  <SiteFooter photo />
+</BaseLayout>

@@ -1,0 +1,92 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo.png';
+import footerPhoto from '../assets/images/footer.png';
+import { site } from '../data/site';
+
+interface Props {
+  /** Landing page shows the full-width photo above the disclaimer. */
+  photo?: boolean;
+}
+const { photo = false } = Astro.props;
+---
+
+<footer class:list={['site-footer', { 'site-footer--photo': photo }]}>
+  {
+    photo && (
+      <div class="site-footer__photo">
+        <Image src={footerPhoto} alt="" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" />
+      </div>
+    )
+  }
+  <div class="site-footer__bar">
+    <div class="container site-footer__inner">
+      <p class="site-footer__disclaimer">
+        MedPay coverage varies by policy and carrier. We'll verify your specific coverage before your visit.
+        {site.name} is a chiropractic practice, not a law firm, and does not provide legal advice.
+      </p>
+      <hr class="divider" />
+      <div class="site-footer__bottom">
+        <a href="/" aria-label={`${site.name} home`}>
+          <Image src={logo} alt={site.name} width={111} height={47} />
+        </a>
+        <ul class="site-footer__links">
+          <li><a href="/privacy-policy">Privacy policy</a></li>
+          <li><a href="/terms">Terms and conditions</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--surface-cream); }
+  .site-footer__photo {
+    position: relative;
+    height: 340px;
+    overflow: hidden;
+    background: var(--surface-page);
+  }
+  .site-footer__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
+  /* soften into the cream bar below and the page above */
+  .site-footer__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(245, 245, 231, 0) 70%, #f5f5e7 100%),
+      linear-gradient(180deg, #fafcfb 0%, rgba(250, 252, 251, 0) 22%);
+    pointer-events: none;
+  }
+  .site-footer__bar { padding-block: 24px; }
+  .site-footer__inner { display: flex; flex-direction: column; gap: 24px; }
+  .site-footer__disclaimer { font-size: 16px; line-height: 1.7; color: var(--text-body); }
+  .site-footer__bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .site-footer__bottom img { width: 111px; height: auto; }
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #707070;
+    text-align: right;
+  }
+  .site-footer__links a:hover { color: var(--text-heading); }
+
+  @media (min-width: 768px) {
+    .site-footer__photo { height: 480px; }
+  }
+  @media (min-width: 1024px) {
+    .site-footer__photo { height: 560px; }
+  }
+  @media (min-width: 1680px) {
+    .site-footer__photo { height: 640px; }
+  }
+</style>

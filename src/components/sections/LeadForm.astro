@@ -1,0 +1,135 @@
+---
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+const carriers = ['State Farm', 'GEICO', 'Progressive', 'Allstate', 'USAA', 'Liberty Mutual', 'Nationwide', 'Farmers', 'Other / Not sure'];
+---
+
+<section class="section section--alt lead-form" id="check-coverage" aria-labelledby="form-title">
+  <div class="container">
+    <form class="form-card" method="post" action="/api/lead" data-lead-form novalidate>
+      <div class="form-card__head">
+        <p class="eyebrow">Check my coverage</p>
+        <h2 id="form-title" class="h2">Let's find out what the accident actually did.</h2>
+        <p class="lead">Tell us a little about you and we'll check your MedPay coverage before your first visit.</p>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>First name</span>
+          <input name="firstName" autocomplete="given-name" required placeholder="Your first name" />
+        </label>
+        <label class="field">
+          <span>Phone</span>
+          <input name="phone" type="tel" autocomplete="tel" required placeholder="(803) 555-0123" />
+        </label>
+        <label class="field field--full">
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+        </label>
+        <label class="field field--full">
+          <span>Auto insurance carrier</span>
+          <select name="carrier" required>
+            <option value="" disabled selected>Select your carrier</option>
+            {carriers.map((c) => <option>{c}</option>)}
+          </select>
+        </label>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="smsConsent" value="yes" />
+        <span>
+          By checking this box, I agree to receive text messages from {site.name} about my appointment and coverage
+          at the number provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out,
+          HELP for help. Consent is not a condition of purchase.
+        </span>
+      </label>
+
+      <!-- honeypot -->
+      <input class="sr-only" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <p class="form-card__error" role="alert" data-form-error hidden></p>
+      <Button type="submit" block>Check my coverage</Button>
+
+      <div class="form-card__alt">
+        <p>Still have questions?</p>
+        <Button href={site.phoneHref} variant="secondary" block>Call {site.phoneDisplay}</Button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  const error = form?.querySelector<HTMLElement>('[data-form-error]');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    if (error) error.hidden = true;
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      // `astro dev` has no /api/lead (it's a Cloudflare Pages Function), so a 404 still goes through locally.
+      if (res.ok || (res.status === 404 && import.meta.env.DEV)) {
+        window.location.href = '/thank-you';
+        return;
+      }
+      throw new Error((await res.json().catch(() => null))?.error ?? 'Something went wrong.');
+    } catch (err) {
+      if (error) {
+        error.textContent = `${(err as Error).message} Please call us instead.`;
+        error.hidden = false;
+      }
+      if (button) button.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .form-card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 840px;
+    margin-inline: auto;
+    padding: 32px 20px;
+    background: #fff;
+    border-radius: 19px;
+    box-shadow: var(--shadow-float);
+  }
+  .form-card__head { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .form-grid { display: grid; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 500; color: var(--text-heading); }
+  .field input,
+  .field select {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--border-input);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-heading);
+  }
+  .field select { appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 8 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 16px center; padding-right: 44px; }
+  .field select:invalid { color: var(--text-subtle); }
+  .field input::placeholder { color: var(--text-subtle); }
+  .field input:focus,
+  .field select:focus { outline: 2px solid var(--green-500); outline-offset: 1px; }
+  .consent { display: flex; align-items: flex-start; gap: 12px; font-size: 12px; line-height: 1.5; color: var(--text-body); }
+  .consent input { flex: none; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green-700); }
+  .form-card__error { font-size: 14px; color: #b42318; text-align: center; }
+  .form-card__alt { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .form-card__alt p { font-size: 14px; color: var(--text-strong); }
+
+  @media (min-width: 768px) {
+    .form-card { padding: 40px; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .field--full { grid-column: 1 / -1; }
+  }
+</style>

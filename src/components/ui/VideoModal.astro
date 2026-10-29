@@ -1,0 +1,63 @@
+---
+// One shared video lightbox. Any element with data-video="<url>" opens it.
+// Works with .mp4/.webm files and YouTube/Vimeo embed URLs.
+import Icon from './Icon.astro';
+---
+
+<dialog class="video-modal" data-video-modal aria-label="Video">
+  <button type="button" class="video-modal__close" aria-label="Close video" data-video-close>
+    <Icon name="close" size={22} />
+  </button>
+  <div class="video-modal__frame" data-video-frame></div>
+</dialog>
+
+<script>
+  const modal = document.querySelector<HTMLDialogElement>('[data-video-modal]');
+  const frame = modal?.querySelector<HTMLElement>('[data-video-frame]');
+
+  if (modal && frame && !modal.dataset.ready) {
+    modal.dataset.ready = 'true';
+    const close = () => {
+      modal.close();
+      frame.innerHTML = '';
+    };
+    document.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement).closest<HTMLElement>('[data-video]');
+      if (!trigger || !trigger.dataset.video) return;
+      const url = trigger.dataset.video;
+      frame.innerHTML = /\.(mp4|webm|mov)(\?|$)/i.test(url)
+        ? `<video src="${url}" controls autoplay playsinline></video>`
+        : `<iframe src="${url}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Video"></iframe>`;
+      modal.showModal();
+    });
+    modal.querySelector('[data-video-close]')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => e.target === modal && close());
+    modal.addEventListener('cancel', () => (frame.innerHTML = ''));
+  }
+</script>
+
+<style>
+  .video-modal {
+    width: min(960px, 92vw);
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: #000;
+    overflow: visible;
+  }
+  .video-modal::backdrop { background: rgba(0, 0, 0, 0.75); }
+  .video-modal__frame { aspect-ratio: 16 / 9; }
+  .video-modal__frame :global(video),
+  .video-modal__frame :global(iframe) { width: 100%; height: 100%; border: 0; border-radius: 12px; }
+  .video-modal__close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+</style>

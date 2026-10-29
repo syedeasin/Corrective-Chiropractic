@@ -1,0 +1,86 @@
+---
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+const symptoms = [
+  'Neck stiffness or reduced range of motion',
+  'Headaches that started after the accident',
+  'Numbness or tingling in the arms or hands',
+  'Shoulder or upper back pain',
+  'Lower back pain or tightness',
+  'Dizziness or trouble concentrating',
+  "Pain that's getting worse instead of better",
+  'Trouble sleeping or turning your head to drive',
+];
+---
+
+<section class="section feeling" aria-labelledby="feeling-title">
+  <div class="container">
+    <div class="feeling__inner">
+      <div class="feeling__head">
+        <p class="eyebrow">If you feel fine, read this</p>
+        <h2 id="feeling-title" class="h2">Feeling okay after a crash doesn't mean you're okay.</h2>
+        <p class="lead">
+          Adrenaline is good at hiding things. Plenty of people walk away from an accident feeling fine, then wake up
+          two days later with a stiff neck, a headache that won't quit, or pain running down an arm. That's normal, and
+          it's why getting checked early matters even when nothing hurts yet.
+        </p>
+      </div>
+
+      <div class="feeling__body">
+        <ul class="feeling__list">
+          {symptoms.map((s) => <li>{s}</li>)}
+        </ul>
+        <p class="title-16">Any of these showing up days or weeks later is worth an exam. So is none of them.</p>
+        <p class="card-sand feeling__note">
+          There's a practical reason to come in early too. The longer the gap between the accident and your first
+          visit, the harder it gets to connect the injury to the crash. Getting documented early protects both your
+          recovery and your claim.
+        </p>
+      </div>
+
+      <Button href={site.ctaHref}>Check my coverage</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feeling__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    max-width: 778px;
+    margin-inline: auto;
+  }
+  .feeling__head { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+  .feeling__head .lead { color: var(--text-muted); }
+  .feeling__body { display: flex; flex-direction: column; gap: 32px; width: 100%; }
+  .feeling__list { display: flex; flex-direction: column; gap: 16px; }
+  .feeling__list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-heading);
+  }
+  .feeling__list li::before {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green-700);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12), inset 0 8px 10px #637953;
+  }
+  .feeling__note {
+    padding: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-strong);
+  }
+  @media (max-width: 767px) {
+    .feeling__head { text-align: center; }
+  }
+</style>

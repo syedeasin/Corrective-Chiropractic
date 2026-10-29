@@ -1,0 +1,95 @@
+---
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+---
+
+<section class="section location" id="location" aria-labelledby="location-title">
+  <div class="container location__inner">
+    <div class="section-head">
+      <p class="eyebrow">Location</p>
+      <h2 id="location-title" class="h2">Find Us In Newberry</h2>
+      <p class="lead">Conveniently located on Calhoun Street, with easy parking right out front.</p>
+    </div>
+
+    <div class="location__row">
+      <div class="location__cards">
+        <div class="loc-card">
+          <h3 class="label">Clinic</h3>
+          <div class="loc-card__line">
+            <Icon name="marker-pin" size={18} />
+            <p>{site.address}</p>
+          </div>
+          <Button href={site.directionsUrl} variant="peach" size="xs" target="_blank" rel="noopener">Get directions</Button>
+        </div>
+
+        <div class="loc-card">
+          <h3 class="label">Contact</h3>
+          <a class="loc-card__line" href={site.phoneHref}><Icon name="phone" size={18} /><span>{site.phoneDisplay}</span></a>
+          <a class="loc-card__line" href={`mailto:${site.email}`}><Icon name="mail" size={18} /><span>{site.email}</span></a>
+        </div>
+
+        <div class="loc-card">
+          <h3 class="label">Open hours</h3>
+          <dl class="hours">
+            {
+              site.hours.map((h) => (
+                <div class="hours__row">
+                  <dt>{h.day}</dt>
+                  <dd>{h.times.map((t) => <span>{t}</span>)}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+
+      <div class="location__map">
+        <iframe
+          src={site.mapEmbedUrl}
+          title={`Map showing ${site.name} at ${site.address}`}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .location__inner { display: flex; flex-direction: column; gap: 40px; }
+  .location__row { display: flex; flex-direction: column; gap: 24px; }
+  .location__cards { display: flex; flex-direction: column; gap: 16px; }
+  .loc-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-page);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+  }
+  .loc-card__line { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--text-strong); word-break: break-word; }
+  .loc-card__line :global(.icon) { flex: none; color: var(--green-700); }
+  a.loc-card__line:hover span { text-decoration: underline; }
+  .hours { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .hours__row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 1.4; }
+  .hours dt { color: var(--text-heading); font-weight: 500; }
+  .hours dd { display: flex; flex-direction: column; align-items: flex-end; color: var(--text-body); text-align: right; }
+
+  .location__map {
+    height: 400px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-map);
+    background: var(--surface-sand);
+  }
+  .location__map iframe { width: 100%; height: 100%; border: 0; }
+
+  @media (min-width: 1024px) {
+    .location__row { flex-direction: row; align-items: stretch; }
+    .location__cards { flex: 0 0 min(420px, 38%); }
+    .location__map { flex: 1; height: auto; min-height: 480px; }
+  }
+</style>

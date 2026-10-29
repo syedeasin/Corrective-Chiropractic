@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Rating from '../ui/Rating.astro';
+import xray from '../../assets/images/exam-xray.png';
+import { site } from '../../data/site';
+
+const included = [
+  '1-on-1 consultation with the doctor',
+  'Full chiropractic examination',
+  'Digital X-rays',
+  'Posture analysis',
+  'Spinal health score (0–100)',
+  'Personalized care plan recommendation',
+];
+---
+
+<section class="section section--alt exam" id="your-exam" aria-labelledby="exam-title">
+  <div class="container exam__inner">
+    <div class="section-head">
+      <p class="eyebrow">Your exam</p>
+      <h2 id="exam-title" class="h2">Find out what the accident did to your spine.</h2>
+      <p class="lead">A detailed exam helps us see what’s really going on so you get the right care, faster.</p>
+    </div>
+
+    <div class="exam__row">
+      <div class="exam__media">
+        <Image
+          src={xray}
+          alt="Neck X-ray with the healthy curve of the cervical spine highlighted"
+          widths={[648]}
+          sizes="(min-width: 1024px) 648px, 100vw"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="exam-card">
+        <div class="exam-card__top">
+          <h3 class="title-18">New Patient Exam</h3>
+          <p class="exam-card__desc">A full picture of what the crash actually changed, and a plan to fix it.</p>
+          <div class="exam-card__price">
+            <s aria-label="Regular price $149">$149</s>
+            <span class="exam-card__badge">Covered by MedPay</span>
+          </div>
+          <p class="exam-card__note">$149 if you don't have coverage</p>
+        </div>
+        <hr class="divider" />
+        <p class="exam-card__included">What’s included:</p>
+        <ul class="exam-card__list">
+          {included.map((i) => <li><Icon name="check-circle" size={15} />{i}</li>)}
+        </ul>
+        <hr class="divider" />
+        <div class="exam-card__cta">
+          <Rating />
+          <Button href={site.ctaHref} block>Check my coverage</Button>
+          <p class="exam-card__fine">Covered by MedPay on most policies. <br />Same-week appointments available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .exam__inner { display: flex; flex-direction: column; gap: 48px; }
+  .exam__row { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .exam__media { position: relative; width: 100%; max-width: 680px; }
+  .exam__media img { width: 100%; height: auto; }
+  /* fade the X-ray into the section like the design */
+  .exam__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, #f4f4eb 0%, rgba(244, 244, 235, 0) 14%, rgba(244, 244, 235, 0) 86%, #f4f4eb 100%),
+      linear-gradient(90deg, rgba(244, 244, 235, 0) 92%, #f4f4eb 100%);
+    pointer-events: none;
+  }
+
+  .exam-card {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 536px;
+    padding: 23px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-float);
+  }
+  .exam-card__top { display: flex; flex-direction: column; gap: 11px; }
+  .exam-card__desc { font-size: 16px; line-height: 1.5; color: var(--text-body); }
+  .exam-card__price { display: flex; align-items: center; gap: 15px; }
+  .exam-card__price s {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-heading);
+    text-decoration-thickness: 2px;
+    text-decoration-color: #45543a;
+  }
+  .exam-card__badge {
+    padding: 4px 8px 6px;
+    border-radius: 5px;
+    background: var(--surface-sand-dark);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text-heading);
+    box-shadow: inset 0 6px 15px 6px rgba(255, 255, 255, 0.3);
+  }
+  .exam-card__note { font-size: 14px; line-height: 1.5; color: var(--text-body); }
+  .exam-card__included { font-size: 14px; font-weight: 500; line-height: 1.2; color: var(--text-heading); }
+  .exam-card__list { display: flex; flex-direction: column; gap: 15px; }
+  .exam-card__list li { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.36; color: var(--text-strong); }
+  .exam-card__list :global(.icon) { color: var(--text-strong); stroke-width: 1.8; }
+  .exam-card__cta { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .exam-card__fine { font-size: 12px; line-height: 1.5; text-align: center; color: var(--text-body); }
+
+  @media (min-width: 1024px) {
+    .exam__row { flex-direction: row; align-items: center; gap: 0; }
+    .exam__media { flex: 0 1 680px; }
+    .exam-card { flex: 0 1 536px; margin-left: auto; margin-right: auto; }
+  }
+</style>

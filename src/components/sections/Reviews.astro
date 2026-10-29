@@ -1,0 +1,109 @@
+---
+import { Image } from 'astro:assets';
+import Stars from '../ui/Stars.astro';
+import Button from '../ui/Button.astro';
+import google from '../../assets/images/google.png';
+import googleSmall from '../../assets/images/google-small.png';
+import jose from '../../assets/images/review-jose.png';
+import tiffany from '../../assets/images/review-tiffany.png';
+import { site } from '../../data/site';
+
+const reviews = [
+  {
+    name: 'Jose Alvarado',
+    date: 'Feb 18, 2026',
+    avatar: jose,
+    text: 'I came in to see Dr. Jess for severe lower back and sciatic pain from a previous car accident. From the moment I walked in, the atmosphere was warm and inviting. Taylor was such a sweetheart—so kind and attentive—and made me feel completely comfortable while I waited for my appointment. I’m incredibly grateful for the care I received and will definitely be coming back regularly!',
+  },
+  {
+    name: "Tiffany's Creations",
+    date: 'Mar 22, 2026',
+    avatar: tiffany,
+    text: 'Our town gained an amazing chiropractor when she (Jessica) came here. She is such a blessing! She took awesome care of my family and I after an auto accident and did the paperwork as well. She is very friendly and takes her time and listens to you and is very knowledgeable about how to help you. I always leave feeling better. I highly recommend her for sure and she has a great coffee bar lol',
+  },
+];
+---
+
+<section class="section reviews" id="reviews" aria-labelledby="reviews-title">
+  <div class="container reviews__inner">
+    <div class="section-head">
+      <p class="eyebrow">Reviews</p>
+      <h2 id="reviews-title" class="h2">Real Patients. <br class="br-desktop" />Real Results.</h2>
+    </div>
+
+    <div class="reviews__body">
+      <div class="google-bar">
+        <Image src={google} alt="" width={40} height={40} />
+        <div class="google-bar__text">
+          <p class="google-bar__title">Google Reviews</p>
+          <p class="google-bar__score"><span>{site.rating}</span> <Stars /></p>
+          <p class="google-bar__count">based on {site.reviewCount} reviews</p>
+        </div>
+        <Button href={site.ctaHref} variant="light" size="sm">Book</Button>
+      </div>
+
+      <ul class="reviews__list">
+        {
+          reviews.map((r) => (
+            <li class="review">
+              <div class="review__head">
+                <Image src={r.avatar} alt="" width={44} height={44} class="review__avatar" />
+                <div class="review__who">
+                  <p class="label">{r.name}</p>
+                  <p class="review__date">{r.date}</p>
+                </div>
+                <Image src={googleSmall} alt="Google review" width={24} height={24} class="review__g" />
+              </div>
+              <hr class="divider" />
+              <div class="review__body">
+                <Stars size={16} gap={2.5} />
+                <p>{r.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reviews__inner { display: flex; flex-direction: column; gap: 40px; }
+  .reviews__body { display: flex; flex-direction: column; gap: 16px; }
+
+  .google-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-cream);
+    border-radius: var(--radius-lg);
+  }
+  .google-bar img { width: 40px; height: 40px; flex: none; }
+  .google-bar__text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .google-bar__title { font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--text-heading); margin-bottom: 4px; }
+  .google-bar__score { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 500; line-height: 1.2; color: rgba(2, 4, 8, 0.8); }
+  .google-bar__count { font-size: 12px; line-height: 1.5; color: var(--text-subtle); }
+
+  .reviews__list { display: grid; gap: 16px; align-items: start; }
+  .review {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface-page);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius);
+  }
+  .review__head { display: flex; align-items: center; gap: 12px; }
+  .review__head :global(.review__avatar) { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; }
+  .review__who { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .review__date { font-size: 14px; line-height: 1.36; color: var(--text-subtle); }
+  .review__head :global(.review__g) { width: 24px; height: 24px; flex: none; }
+  .review__body { display: flex; flex-direction: column; gap: 8px; }
+  .review__body p { font-size: 14px; line-height: 1.36; color: var(--text-strong); }
+
+  @media (min-width: 1024px) {
+    .reviews__list { grid-template-columns: 1fr 1fr; }
+  }
+</style>

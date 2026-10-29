@@ -1,0 +1,159 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import CallCta from '../ui/CallCta.astro';
+import stateFarm from '../../assets/images/ins-statefarm.png';
+import geico from '../../assets/images/ins-geico.png';
+import usaa from '../../assets/images/ins-usaa.png';
+import allstate from '../../assets/images/ins-allstate.png';
+import progressive from '../../assets/images/ins-progressive.png';
+
+const myths = [
+  {
+    myth: '"I need an attorney to get treatment covered."',
+    truth: "MedPay is your own coverage. It pays out on your policy, not the other driver's. No attorney involved.",
+  },
+  {
+    myth: '"It only covers me if the accident wasn\'t my fault."',
+    truth: "Fault doesn't matter. MedPay pays regardless of who caused the accident.",
+  },
+  {
+    myth: '"I have to wait until the claim settles."',
+    truth: 'MedPay pays as you go. Care starts now, not months from now.',
+  },
+  {
+    myth: '"I need a referral from my doctor."',
+    truth: 'No referral needed. You can book directly.',
+  },
+];
+
+const carriers = [
+  { src: stateFarm, alt: 'State Farm', w: 138 },
+  { src: geico, alt: 'GEICO', w: 106 },
+  { src: usaa, alt: 'USAA', w: 100 },
+  { src: allstate, alt: 'Allstate', w: 108 },
+  { src: progressive, alt: 'Progressive', w: 124 },
+];
+---
+
+<section class="section medpay" id="medpay" aria-labelledby="medpay-title">
+  <div class="container medpay__inner">
+    <div class="section-head">
+      <p class="eyebrow">What most people don't know</p>
+      <h2 id="medpay-title" class="h2">Most people have coverage <br class="br-desktop" />for this and never use it.</h2>
+      <p class="lead medpay__intro">
+        It's called <strong>MedPay</strong>, and it's part of most auto insurance policies in South Carolina. It's money
+        set aside in your own plan to cover medical care after a car accident. You don't have to prove anything. You
+        don't have to wait for a settlement. You don't need an attorney to access it. Most people never find out it's
+        there.
+      </p>
+      <p class="title-16">Use your own insurance. <br />No referral, no attorney needed.</p>
+    </div>
+
+    <span class="medpay__rule" aria-hidden="true"></span>
+
+    <h3 class="title-18 medpay__compare-title">What people think vs What's actually true</h3>
+
+    <ul class="medpay__myths">
+      {
+        myths.map((m) => (
+          <li class="card-sand myth">
+            <p class="myth__row">
+              <Icon name="x-circle" class="myth__x" />
+              <span class="sr-only">Myth: </span>
+              <span>{m.myth}</span>
+            </p>
+            <hr class="divider" />
+            <p class="myth__row">
+              <Icon name="check-verified" class="myth__check" />
+              <span class="sr-only">Fact: </span>
+              <span>{m.truth}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="medpay__carriers">
+      <p class="medpay__carriers-title">MedPay is included in most policies from:</p>
+      <ul class="medpay__logos">
+        {
+          carriers.map((c) => (
+            <li>
+              <Image src={c.src} alt={c.alt} width={c.w} densities={[1, 2, 3]} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <p class="title-16 medpay__unsure">Not sure if your policy includes it?</p>
+    <CallCta />
+  </div>
+</section>
+
+<style>
+  .medpay__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .medpay__intro { max-width: 652px; color: var(--text-muted); }
+  .medpay__intro strong { font-weight: 500; color: var(--text-heading); }
+  .medpay__rule { width: 62px; height: 1px; background: var(--border-default); }
+  .medpay__compare-title { text-align: center; }
+
+  .medpay__myths {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 622px;
+  }
+  .myth {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+  }
+  .myth__row {
+    display: flex;
+    gap: 9px;
+    font-size: 14px;
+    line-height: 1.36;
+    color: var(--text-heading);
+  }
+  .myth__row :global(.icon) { margin-top: 1px; }
+  .myth :global(.myth__x) { color: rgba(0, 0, 0, 0.6); }
+  .myth :global(.myth__check) { color: #12b76a; }
+
+  .medpay__carriers {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    margin-top: 12px;
+  }
+  .medpay__carriers-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .medpay__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 24px 32px;
+  }
+  .medpay__logos img { height: auto; }
+  .medpay__unsure { margin-top: 12px; text-align: center; }
+
+  @media (min-width: 1680px) {
+    .medpay__myths { max-width: 733px; }
+    .medpay__intro { max-width: 692px; }
+  }
+</style>
